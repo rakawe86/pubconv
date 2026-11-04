@@ -21,7 +21,7 @@ After step 3, the package is rebuilt on GitHub with those values. Microsoft reje
 - **Category:** Productivity. Subcategory if asked: none.
 - **Privacy policy URL:** https://github.com/rakawe86/pubconv/blob/main/PRIVACY.md
 - **Website:** https://github.com/rakawe86/pubconv
-- **Third-party purchase API:** declare it. The Donate button opens the project page, which links to PayPal for voluntary donations that unlock nothing (Store Policy 10.8.2).
+- **Third-party purchase API:** declare it. The Donate button opens PayPal in the browser for voluntary donations that unlock nothing (Store Policy 10.8.2).
 - **Support contact:** https://github.com/rakawe86/pubconv/issues
 - **System requirements:** Windows 10 version 1809 or later, x64, 4 GB RAM; about 500 MB disk.
 

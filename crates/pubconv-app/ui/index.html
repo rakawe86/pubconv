@@ -252,8 +252,10 @@ footer.running .progress { display: flex; }
   <div class="dialog">
     <h3><img class="logo" style="width:40px;height:40px" src="/logo.png" alt=""><span>PubConv <span id="ver" style="font-weight:400;color:var(--muted);font-size:16px"></span></span></h3>
     <p>Converts Microsoft Publisher (.pub) files to PDF on this PC. Nothing is uploaded and no internet connection is needed.</p>
-    <p>Includes LibreOffice technology (Mozilla Public License 2.0) and other open-source components. See the licence files in the installation folder.</p>
-    <p>PubConv is free and open source. If it saved you time, you can support it with a donation (optional, through PayPal; it unlocks nothing). Microsoft is not the recipient or sponsor of donations.</p>
+    <p>I noticed that many converters aren't free, and even then they lose WordArt and scramble linked text. Now that Microsoft is ending Publisher, people still need their files, so I decided to build this converter for everyone who needs it.</p>
+    <p>I built PubConv's own engine to fix that. It reads WordArt, linked stories, fonts, wraps and groups straight from the .pub file and lays them out the way Publisher does, checked against Publisher's own PDFs. For the page layout underneath, I use LibreOffice technology (Mozilla Public License 2.0), alongside other open-source components. See the licence files in the installation folder.</p>
+    <p>PubConv is free and open source. If it saved you time, you can support my work with a donation (optional, through PayPal; it unlocks nothing). Microsoft is not the recipient or sponsor of donations.</p>
+    <p style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><strong>Adnan</strong><span style="color:var(--muted)">&middot;</span><span>Built in the UAE, for the world</span><svg role="img" aria-label="Flag of the United Arab Emirates" width="24" height="12" viewBox="0 0 12 6" style="border-radius:2px;flex:none"><rect width="12" height="2" fill="#00732f"/><rect y="2" width="12" height="2" fill="#fff"/><rect y="4" width="12" height="2" fill="#000"/><rect width="3" height="6" fill="#ff0000"/></svg></p>
     <p>Microsoft and Publisher are trademarks of Microsoft Corporation. PubConv is not affiliated with Microsoft.</p>
     <div class="end"><button class="btn" id="aboutDonate">Donate</button><button class="btn" id="aboutHelp">Help</button><button class="btn primary" id="aboutClose">Close</button></div>
   </div>

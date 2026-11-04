@@ -24,6 +24,7 @@ use pubconv::{collect_pub_files, convert, Event, Options, Summary, APP_NAME, VER
 
 /// The project page: help, and the donate link (kept there so it can change without a new release).
 const HOME: &str = "https://github.com/rakawe86/pubconv";
+const DONATE: &str = "https://www.paypal.com/ncp/payment/X45F9F8S58KL8";
 const UI: &str = include_str!("../ui/index.html");
 const ICON: &[u8] = include_bytes!("../assets/pubconv.ico");
 const LOGO: &[u8] = include_bytes!("../assets/pubconv.png");
@@ -188,8 +189,8 @@ impl App {
                 }
             }
             "url" => {
-                let anchor = if m["which"] == "donate" { "#support-pubconv" } else { "#readme" };
-                shell_open("open", &format!("{HOME}{anchor}"), None);
+                let url = if m["which"] == "donate" { DONATE.to_string() } else { format!("{HOME}#readme") };
+                shell_open("open", &url, None);
             }
             _ => {}
         }
