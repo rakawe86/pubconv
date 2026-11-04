@@ -1,0 +1,124 @@
+{
+ "f13_linked_text": {
+  "font": "Arial",
+  "size": 12,
+  "boxes": [
+   {
+    "left": 60,
+    "top": 60,
+    "width": 220,
+    "height": 300
+   },
+   {
+    "left": 310,
+    "top": 60,
+    "width": 220,
+    "height": 300
+   }
+  ],
+  "story_contains": "Our community",
+  "story": "Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. \r",
+  "publisher_lines": [
+   [
+    "Our community centre opens its doors",
+    "every Saturday for families, students",
+    "and seniors. Join us for workshops,",
+    "shared meals and a friendly place to",
+    "learn something new. Our community",
+    "centre opens its doors every Saturday",
+    "for families, students and seniors. Join",
+    "us for workshops, shared meals and a",
+    "friendly place to learn something new.",
+    "Our community centre opens its doors",
+    "every Saturday for families, students",
+    "and seniors. Join us for workshops,",
+    "shared meals and a friendly place to",
+    "learn something new. Our community",
+    "centre opens its doors every Saturday",
+    "for families, students and seniors. Join",
+    "us for workshops, shared meals and a",
+    "friendly place to learn something new.",
+    "Our community centre opens its doors"
+   ],
+   [
+    "every Saturday for families, students",
+    "and seniors. Join us for workshops,",
+    "shared meals and a friendly place to",
+    "learn something new. Our community",
+    "centre opens its doors every Saturday",
+    "for families, students and seniors. Join",
+    "us for workshops, shared meals and a",
+    "friendly place to learn something new.",
+    "Our community centre opens its doors",
+    "every Saturday for families, students",
+    "and seniors. Join us for workshops,",
+    "shared meals and a friendly place to",
+    "learn something new. Our community",
+    "centre opens its doors every Saturday",
+    "for families, students and seniors. Join",
+    "us for workshops, shared meals and a",
+    "friendly place to learn something new.",
+    "Our community centre opens its doors",
+    "every Saturday for families, students"
+   ]
+  ]
+ },
+ "r02_newsletter": {
+  "font": "Arial",
+  "size": 11,
+  "boxes": [
+   {
+    "left": 40,
+    "top": 130,
+    "width": 250,
+    "height": 560
+   },
+   {
+    "left": 320,
+    "top": 360,
+    "width": 250,
+    "height": 330
+   }
+  ],
+  "story_contains": "Garden project",
+  "story": "Garden project grows\rOur community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. Our community centre opens its doors every Saturday for families, students and seniors. Join us for workshops, shared meals and a friendly place to learn something new. \r",
+  "publisher_lines": [
+   [
+    "Garden project grows",
+    "Our community centre opens its doors every Sat-",
+    "urday for families, students and seniors. Join us",
+    "for workshops, shared meals and a friendly place",
+    "to learn something new. Our community centre",
+    "opens its doors every Saturday for families, stu-",
+    "dents and seniors. Join us for workshops, shared",
+    "meals and a friendly place to learn something",
+    "new. Our community centre opens its doors every",
+    "Saturday for families, students and seniors. Join",
+    "us for workshops, shared meals and a friendly",
+    "place to learn something new. Our community",
+    "centre opens its doors every Saturday for fami-",
+    "lies, students and seniors. Join us for workshops,",
+    "shared meals and a friendly place to learn some-",
+    "thing new. Our community centre opens its doors",
+    "every Saturday for families, students and seniors.",
+    "Join us for workshops, shared meals and a friend-",
+    "ly place to learn something new. Our community",
+    "centre opens its doors every Saturday for fami-",
+    "lies, students and seniors. Join us for workshops,",
+    "shared meals and a friendly place to learn some-",
+    "thing new. Our community centre opens its doors",
+    "every Saturday for families, students and seniors.",
+    "Join us for workshops, shared meals and a friend-",
+    "ly place to learn something new. Our community",
+    "centre opens its doors every Saturday for fami-",
+    "lies, students and seniors. Join us for workshops,",
+    "shared meals and a friendly place to learn some-",
+    "thing new. Our community centre opens its doors",
+    "every Saturday for families, students and seniors.",
+    "Join us for workshops, shared meals and a friend-",
+    "ly place to learn something new."
+   ],
+   []
+  ]
+ }
+}

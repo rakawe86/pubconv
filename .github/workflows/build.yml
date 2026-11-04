@@ -1,0 +1,196 @@
+# PubConv CI on GitHub's Windows machines.
+#
+# Every push / pull request: Rust tests (incl. fuzzing), release build, app smoke test.
+# Run manually ("Run workflow") or push a tag like v1.0.0: also the end-to-end
+# stress test and the release packages (portable zip, Microsoft Store MSIX).
+# Tags additionally publish a GitHub Release with those files attached.
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # needed to publish releases for version tags
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Tests and build
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rust (GNU toolchain, as used locally)
+        run: |
+          rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal
+          rustup default stable-x86_64-pc-windows-gnu
+          rustc --version
+
+      - name: Import-library tools for the app's Windows libraries
+        run: |
+          if (Get-Command as -ErrorAction SilentlyContinue) { "assembler: " + (Get-Command as).Source }
+          else {
+            choco install mingw -y --no-progress
+            "C:/ProgramData/mingw64/mingw64/bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+          }
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Rust tests (unit, integration, fuzzing)
+        run: cargo test --release
+
+      - name: Build
+        run: cargo build --release
+
+      - name: App smoke test (opens the real window with sample files and takes a screenshot)
+        run: |
+          $p = Start-Process target/release/pubconv.exe -ArgumentList "`"$PWD/testdata/corpus`"" -PassThru
+          Start-Sleep 15
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+          [System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+          New-Item -ItemType Directory -Force .build | Out-Null
+          $bmp.Save("$PWD/.build/app-window.png")
+          if ($p.HasExited) { throw "The app closed by itself (exit code $($p.ExitCode))" }
+          Stop-Process -Id $p.Id
+
+      - name: Upload app screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-window
+          path: .build/app-window.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+  release:
+    name: Stress test and packages
+    needs: test
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rust (GNU toolchain)
+        run: |
+          rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal
+          rustup default stable-x86_64-pc-windows-gnu
+
+      - name: Import-library tools for the app's Windows libraries
+        run: |
+          if (Get-Command as -ErrorAction SilentlyContinue) { "assembler: " + (Get-Command as).Source }
+          else {
+            choco install mingw -y --no-progress
+            "C:/ProgramData/mingw64/mingw64/bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+          }
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python packages
+        run: python -m pip install pillow pymupdf psutil
+
+      - name: LibreOffice (source of the bundled page engine)
+        run: |
+          choco install libreoffice-fresh -y --no-progress
+          if (-not (Test-Path "C:\Program Files\LibreOffice\program\soffice.com")) { throw "LibreOffice not installed" }
+
+      - name: Release packages (zips + Microsoft Store MSIX)
+        run: python packaging/build_release.py
+
+      - name: End-to-end stress test
+        run: python tools/stress_test.py
+
+      # Code signing (free for open source, by SignPath Foundation). Runs once the
+      # SignPath project exists and its API token is saved as the SIGNPATH_API_TOKEN
+      # secret; until then the zip ships unsigned. The Store MSIX is signed by Microsoft.
+      - name: Is code signing set up?
+        id: signing
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+        run: if ($env:SIGNPATH_API_TOKEN) { "enabled=true" | Out-File -Append -Encoding utf8 $env:GITHUB_OUTPUT }
+
+      - name: Upload unsigned zip for signing
+        id: unsigned
+        if: steps.signing.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pubconv-unsigned
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Sign with SignPath
+        if: steps.signing.outputs.enabled == 'true'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: pubconv
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: zip
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist/signed
+
+      - name: Use the signed zip
+        if: steps.signing.outputs.enabled == 'true'
+        run: Get-ChildItem dist/signed -Filter *.zip | Move-Item -Destination dist -Force
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: pubconv-packages
+          path: |
+            dist/*.zip
+            dist/*.msix
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload stress-test log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stress-test-output
+          path: .build/stress/**/*.txt
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Publish GitHub Release (version tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" dist/*.zip --title "PubConv ${{ github.ref_name }}" --generate-notes

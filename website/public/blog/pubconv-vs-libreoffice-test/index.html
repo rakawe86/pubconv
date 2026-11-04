@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PubConv vs LibreOffice: 33 Publisher Files Tested | PubConv</title>
+<meta name="description" content="A side-by-side test of converting Microsoft Publisher files with free LibreOffice and with PubConv: WordArt, newsletters with linked text boxes, tables, images and more.">
+<link rel="canonical" href="https://pubconv.netlify.app/blog/pubconv-vs-libreoffice-test/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="PubConv">
+<meta property="og:title" content="PubConv vs LibreOffice: We Converted 33 Publisher Files with Both">
+<meta property="og:description" content="A side-by-side test of converting Microsoft Publisher files with free LibreOffice and with PubConv: WordArt, newsletters with linked text boxes, tables, images and more.">
+<meta property="og:url" content="https://pubconv.netlify.app/blog/pubconv-vs-libreoffice-test/">
+<meta property="og:image" content="https://pubconv.netlify.app/img/certificate-after.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://pubconv.netlify.app/#org", "name": "PubConv", "url": "https://pubconv.netlify.app/", "logo": "https://pubconv.netlify.app/img/logo-256.png", "email": "support@example.com"}, {"@type": "WebSite", "@id": "https://pubconv.netlify.app/#site", "url": "https://pubconv.netlify.app/", "name": "PubConv", "publisher": {"@id": "https://pubconv.netlify.app/#org"}}, {"@type": "BlogPosting", "headline": "PubConv vs LibreOffice: We Converted 33 Publisher Files with Both", "description": "A side-by-side test of converting Microsoft Publisher files with free LibreOffice and with PubConv: WordArt, newsletters with linked text boxes, tables, images and more.", "datePublished": "2026-10-25", "dateModified": "2026-10-25", "author": {"@type": "Organization", "name": "PubConv"}, "publisher": {"@id": "https://pubconv.netlify.app/#org"}, "image": "https://pubconv.netlify.app/img/certificate-after.jpg", "mainEntityOfPage": "https://pubconv.netlify.app/blog/pubconv-vs-libreoffice-test/"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://pubconv.netlify.app/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://pubconv.netlify.app/blog/"}, {"@type": "ListItem", "position": 3, "name": "PubConv vs LibreOffice: We Converted 33 Publisher Files with Both", "item": "https://pubconv.netlify.app/blog/pubconv-vs-libreoffice-test/"}]}]}</script>
+</head>
+<body>
+<a href="#main" class="skip" style="position:absolute;left:-9999px">Skip to content</a>
+<div class="announce"><div class="wrap"><strong>Microsoft Publisher support ended in October 2026.</strong> Convert your .pub files to PDF while you still can. <a href="/blog/microsoft-publisher-end-of-support/">What it means →</a></div></div>
+<header class="site-header"><div class="wrap">
+  <a class="brand" href="/"><img src="/img/logo-256.png" alt="" width="32" height="32">PubConv</a>
+  <nav class="nav" aria-label="Main"><a href="/#how-it-works">How it works</a><a href="/pricing/">Pricing</a><a href="/blog/">Blog</a><a href="/faq/">FAQ</a><a class="btn btn-primary btn-small" href="/download/">Free trial</a></nav>
+</div></header>
+<main id="main">
+<article class="article"><div class="wrap narrow">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blog/">Blog</a></nav>
+<h1>PubConv vs LibreOffice: We Converted 33 Publisher Files with Both</h1>
+<p class="meta">PubConv · 25 October 2026 · 7 min read</p>
+<p>LibreOffice is the go-to free option for opening Publisher files, and it's good software. We wanted a fair, concrete answer to one question: where does it fall short, and does PubConv actually do better there? So we made a test set and converted it with both.</p>
+
+<h2>How we tested</h2>
+<ul>
+  <li>We created <strong>33 documents in Microsoft Publisher</strong>: 23 that each exercise one feature (fonts, tables, images, rotation, WordArt, linked text boxes, Arabic, master pages and so on) and 10 realistic documents (flyer, newsletter, menu, certificate, church bulletin, brochure, calendar, poster, sign-up form and an Arabic flyer).</li>
+  <li>For each one, Publisher exported its own PDF as the reference.</li>
+  <li>We converted the .pub files with LibreOffice and with PubConv on the same PC, and compared every page with Publisher's version by eye and with automated text checks.</li>
+  <li>We also made 39 WordArt test files covering Publisher's WordArt styles.</li>
+</ul>
+<div class="note"><p><strong>Caveat:</strong> these are documents we made. Real-world archives contain things we didn't test, so try both tools on your own files.</p></div>
+
+<h2>The results at a glance</h2>
+<div class="table-wrap"><table>
+  <thead><tr><th>What we checked</th><th>LibreOffice</th><th>PubConv</th></tr></thead>
+  <tbody>
+    <tr><td>Text, fonts, colours, tables, pictures, shapes, rotation</td><td class="yes">Good</td><td class="yes">Good (uses the same layout engine)</td></tr>
+    <tr><td>WordArt headlines</td><td class="no">Missing, or black shapes</td><td class="yes">Drawn with the right text, font, warp and colour</td></tr>
+    <tr><td>Linked text boxes (newsletters)</td><td class="no">Whole article in every box, overflowing</td><td class="yes">Same line breaks as Publisher: 38/38 and 33/33 lines identical</td></tr>
+    <tr><td>Realistic documents that looked right</td><td>About 5 of 10</td><td>9 of 10 (the Arabic flyer's text sizes differ from Publisher in both tools)</td></tr>
+    <tr><td>Whole-folder conversion</td><td>Command line</td><td>Windows app and command line</td></tr>
+  </tbody>
+</table></div>
+
+<h2>WordArt: the most visible difference</h2>
+<p>WordArt is the curved, slanted or wavy headline text that makes Publisher documents look like Publisher documents. LibreOffice reads the WordArt shape but not its text, so it draws the empty outline. On our certificate that became two thick black curves where the title should be.</p>
+<div class="pair">
+  <figure><img src="/img/certificate-before.jpg" width="1210" height="579" loading="lazy" alt="Certificate converted by LibreOffice with black curved shapes instead of the title"><figcaption><span class="bad">LibreOffice</span></figcaption></figure>
+  <figure><img src="/img/certificate-after.jpg" width="1210" height="579" loading="lazy" alt="Certificate converted by PubConv with the curved title intact"><figcaption><span class="good">PubConv</span></figcaption></figure>
+</div>
+<p>PubConv reads the WordArt's text, font, style, bend and colours straight from the .pub file and redraws it. Here are several Publisher WordArt styles next to PubConv's output:</p>
+<figure><img src="/img/wordart-styles.jpg" width="902" height="2026" loading="lazy" alt="Eight WordArt styles: Publisher on the left, PubConv on the right, closely matching">
+<figcaption>Left: Publisher. Right: PubConv. Gradient fills and shadows are simplified to a single colour.</figcaption></figure>
+
+<h2>Newsletters: text that flows between boxes</h2>
+<p>In a newsletter, an article often starts in one text box and continues in another, sometimes on the next page. Publisher doesn't store where the text breaks; it works it out each time it opens the file. LibreOffice gives the whole article to every box, so it appears twice and overflows.</p>
+<div class="pair">
+  <figure><img src="/img/linked-text-before.jpg" width="935" height="605" loading="lazy" alt="Two linked columns converted by LibreOffice, both containing the full text and overflowing"><figcaption><span class="bad">LibreOffice</span></figcaption></figure>
+  <figure><img src="/img/linked-text-after.jpg" width="935" height="605" loading="lazy" alt="The same columns converted by PubConv, with text flowing from the first column into the second"><figcaption><span class="good">PubConv</span></figcaption></figure>
+</div>
+<p>PubConv flows the text itself using Publisher's rules: margins, line spacing, paragraph spacing and hyphenation. In our tests every line matched Publisher's, including the hyphens.</p>
+
+<h2>Where PubConv isn't perfect</h2>
+<ul>
+  <li>Rainbow and multi-colour gradient WordArt is drawn in one colour, and 3D WordArt effects are drawn flat.</li>
+  <li>For everything other than WordArt and linked text, PubConv uses the same open-source layout engine as LibreOffice, so it shares that engine's strengths and limits.</li>
+</ul>
+
+<h2>Verdict</h2>
+<p>For simple documents, LibreOffice is a fine free choice. If your files have WordArt headlines or newsletters (as most school, church and community documents do), PubConv's output is much closer to what you designed in Publisher. Try both on your own files; PubConv's trial is free and works at full quality.</p>
+
+<div class="cta-box"><h2>Convert your Publisher files the easy way</h2>
+<p>PubConv turns whole folders of .pub files into PDFs on your own PC, keeping WordArt headlines and newsletter text intact. Nothing is uploaded.</p>
+<div class="cta-row"><a class="btn btn-primary" href="/download/">Try it free</a><a class="btn btn-ghost" href="/pricing/">See pricing</a></div></div>
+</div></article>
+</main>
+<footer class="site-footer"><div class="wrap">
+  <div class="foot-grid">
+    <div><a class="brand" href="/"><img src="/img/logo-256.png" alt="" width="28" height="28">PubConv</a>
+      <p>Convert Microsoft Publisher files to PDF on your own PC. Offline, private, and faithful to WordArt and newsletters.</p></div>
+    <div><h4>Product</h4><ul><li><a href="/download/">Download</a></li><li><a href="/pricing/">Pricing</a></li><li><a href="/faq/">FAQ</a></li></ul></div>
+    <div><h4>Guides</h4><ul>
+      <li><a href="/blog/how-to-open-pub-file-without-publisher/">Open .pub without Publisher</a></li>
+      <li><a href="/blog/batch-convert-publisher-files-to-pdf/">Batch convert .pub to PDF</a></li>
+      <li><a href="/blog/pubconv-vs-libreoffice-test/">PubConv vs LibreOffice</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a href="mailto:support@example.com">Contact</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Licence &amp; terms</a></li></ul></div>
+  </div>
+  <p class="legal">© 2026 PubConv. Microsoft and Publisher are trademarks of Microsoft Corporation. PubConv is an independent product and is not affiliated with or endorsed by Microsoft. LibreOffice is a trademark of The Document Foundation.</p>
+</div></footer>
+</body>
+</html>

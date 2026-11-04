@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batch Convert Publisher Files to PDF: IT Guide | PubConv</title>
+<meta name="description" content="Step-by-step guide to finding and bulk-converting Microsoft Publisher .pub files to PDF: PowerShell inventory, conversion options, logs and checks.">
+<link rel="canonical" href="https://pubconv.netlify.app/blog/batch-convert-publisher-files-to-pdf/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="PubConv">
+<meta property="og:title" content="How to Batch Convert Publisher Files to PDF (Guide for IT Teams)">
+<meta property="og:description" content="Step-by-step guide to finding and bulk-converting Microsoft Publisher .pub files to PDF: PowerShell inventory, conversion options, logs and checks.">
+<meta property="og:url" content="https://pubconv.netlify.app/blog/batch-convert-publisher-files-to-pdf/">
+<meta property="og:image" content="https://pubconv.netlify.app/img/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://pubconv.netlify.app/#org", "name": "PubConv", "url": "https://pubconv.netlify.app/", "logo": "https://pubconv.netlify.app/img/logo-256.png", "email": "support@example.com"}, {"@type": "WebSite", "@id": "https://pubconv.netlify.app/#site", "url": "https://pubconv.netlify.app/", "name": "PubConv", "publisher": {"@id": "https://pubconv.netlify.app/#org"}}, {"@type": "BlogPosting", "headline": "How to Batch Convert Publisher Files to PDF (Guide for IT Teams)", "description": "Step-by-step guide to finding and bulk-converting Microsoft Publisher .pub files to PDF: PowerShell inventory, conversion options, logs and checks.", "datePublished": "2026-10-23", "dateModified": "2026-10-23", "author": {"@type": "Organization", "name": "PubConv"}, "publisher": {"@id": "https://pubconv.netlify.app/#org"}, "image": "https://pubconv.netlify.app/img/og-card.jpg", "mainEntityOfPage": "https://pubconv.netlify.app/blog/batch-convert-publisher-files-to-pdf/"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://pubconv.netlify.app/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://pubconv.netlify.app/blog/"}, {"@type": "ListItem", "position": 3, "name": "How to Batch Convert Publisher Files to PDF (Guide for IT Teams)", "item": "https://pubconv.netlify.app/blog/batch-convert-publisher-files-to-pdf/"}]}]}</script>
+</head>
+<body>
+<a href="#main" class="skip" style="position:absolute;left:-9999px">Skip to content</a>
+<div class="announce"><div class="wrap"><strong>Microsoft Publisher support ended in October 2026.</strong> Convert your .pub files to PDF while you still can. <a href="/blog/microsoft-publisher-end-of-support/">What it means →</a></div></div>
+<header class="site-header"><div class="wrap">
+  <a class="brand" href="/"><img src="/img/logo-256.png" alt="" width="32" height="32">PubConv</a>
+  <nav class="nav" aria-label="Main"><a href="/#how-it-works">How it works</a><a href="/pricing/">Pricing</a><a href="/blog/">Blog</a><a href="/faq/">FAQ</a><a class="btn btn-primary btn-small" href="/download/">Free trial</a></nav>
+</div></header>
+<main id="main">
+<article class="article"><div class="wrap narrow">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blog/">Blog</a></nav>
+<h1>How to Batch Convert Publisher Files to PDF (Guide for IT Teams)</h1>
+<p class="meta">PubConv · 23 October 2026 · 8 min read</p>
+<p>If you look after IT for a school, diocese, charity or small business, Publisher's retirement probably landed on your desk as "can you sort out all the .pub files?" This guide covers a repeatable way to do it, from finding the files to checking the results.</p>
+
+<h2>Step 1: Find every .pub file</h2>
+<p>Start with an inventory, so you know the size of the job and can report progress. On a file server or a PC with access to the shares, this PowerShell lists every .pub file with its size and date, and saves it as a spreadsheet:</p>
+<pre><code>Get-ChildItem -Path "D:\Shares" -Recurse -Filter *.pub -File -ErrorAction SilentlyContinue |
+  Select-Object FullName, Length, LastWriteTime |
+  Export-Csv "$env:USERPROFILE\Desktop\pub-inventory.csv" -NoTypeInformation</code></pre>
+<p>Don't forget OneDrive and SharePoint document libraries (sync them or use their search), staff laptops, and old USB backups.</p>
+
+<h2>Step 2: Decide what to convert</h2>
+<ul>
+  <li><strong>Archive copies (most files):</strong> convert to PDF and keep the original next to it.</li>
+  <li><strong>Templates still in use:</strong> convert to PDF for reference, then rebuild them in Word or PowerPoint, as Microsoft suggests.</li>
+  <li><strong>Duplicates and junk:</strong> the inventory usually shows plenty. Agree a policy before deleting anything.</li>
+</ul>
+
+<h2>Step 3: Convert in bulk</h2>
+<h3>Option A: Microsoft's script (needs Publisher)</h3>
+<p>Microsoft publishes a sample PowerShell script, Convert-PubFileToPDF.ps1, that drives Publisher to export files or folders to PDF. It gives Publisher-perfect output, but it needs a PC with Publisher still installed, and Microsoft asks you to test and adapt it. It doesn't overwrite existing files, so clear or rename conflicts first.</p>
+
+<h3>Option B: LibreOffice headless (free)</h3>
+<p>LibreOffice can convert from the command line:</p>
+<pre><code>soffice --headless --convert-to pdf --outdir "D:\PDF" "D:\Archive\*.pub"</code></pre>
+<p>It's free and scriptable, but it doesn't recurse into subfolders by itself, and WordArt and linked newsletter text often come out wrong (<a href="/blog/pubconv-vs-libreoffice-test/">see our test</a>).</p>
+
+<h3>Option C: PubConv command line</h3>
+<p>PubConv includes <code>pubconv-cli</code> for scripted jobs. It walks a whole tree, writes each PDF next to its .pub (or to an output folder), and reports a result for each file:</p>
+<pre><code>pubconv-cli "D:\Archive" -r -o "D:\PDF" &gt; "D:\PDF\conversion-log.txt"</code></pre>
+<ul>
+  <li><code>-r</code> includes subfolders; <code>-o</code> sets an output folder.</li>
+  <li>Each line says <code>OK</code> or <code>FAIL</code> with the file and the reason, which is easy to filter in a spreadsheet.</li>
+  <li>Exit code 0 means every file converted, 1 means some failed, 2 means a usage error. That's handy in scheduled tasks.</li>
+  <li>Everything runs locally; nothing is uploaded.</li>
+</ul>
+<p>Prefer clicking? The PubConv window does the same: add a folder, choose an output, click Convert.</p>
+
+<h2>Step 4: Check the results</h2>
+<p>No converter is perfect, so spot-check before you sign the job off:</p>
+<ol>
+  <li>Compare the number of PDFs with the inventory count.</li>
+  <li>Open a sample from each year and each department.</li>
+  <li>Look specifically at documents with WordArt headlines and multi-page newsletters, which are where converters most often fail.</li>
+  <li>Re-run any failures individually, and keep the original .pub files in all cases.</li>
+</ol>
+
+<h2>Step 5: Communicate</h2>
+<p>Tell staff where the PDFs are, that the originals are kept, and who to contact if a document looks wrong. A short note saves a lot of support tickets.</p>
+
+<div class="cta-box"><h2>Convert your Publisher files the easy way</h2>
+<p>PubConv turns whole folders of .pub files into PDFs on your own PC, keeping WordArt headlines and newsletter text intact. Nothing is uploaded.</p>
+<div class="cta-row"><a class="btn btn-primary" href="/download/">Try it free</a><a class="btn btn-ghost" href="/pricing/">See pricing</a></div></div>
+</div></article>
+</main>
+<footer class="site-footer"><div class="wrap">
+  <div class="foot-grid">
+    <div><a class="brand" href="/"><img src="/img/logo-256.png" alt="" width="28" height="28">PubConv</a>
+      <p>Convert Microsoft Publisher files to PDF on your own PC. Offline, private, and faithful to WordArt and newsletters.</p></div>
+    <div><h4>Product</h4><ul><li><a href="/download/">Download</a></li><li><a href="/pricing/">Pricing</a></li><li><a href="/faq/">FAQ</a></li></ul></div>
+    <div><h4>Guides</h4><ul>
+      <li><a href="/blog/how-to-open-pub-file-without-publisher/">Open .pub without Publisher</a></li>
+      <li><a href="/blog/batch-convert-publisher-files-to-pdf/">Batch convert .pub to PDF</a></li>
+      <li><a href="/blog/pubconv-vs-libreoffice-test/">PubConv vs LibreOffice</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a href="mailto:support@example.com">Contact</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Licence &amp; terms</a></li></ul></div>
+  </div>
+  <p class="legal">© 2026 PubConv. Microsoft and Publisher are trademarks of Microsoft Corporation. PubConv is an independent product and is not affiliated with or endorsed by Microsoft. LibreOffice is a trademark of The Document Foundation.</p>
+</div></footer>
+</body>
+</html>

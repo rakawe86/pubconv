@@ -1,0 +1,13 @@
+[package]
+name = "pubconv"
+version = "1.0.0"
+edition.workspace = true
+license.workspace = true
+description = "Convert Microsoft Publisher (.pub) files to PDF offline, with WordArt and linked text boxes done right."
+
+[dependencies]
+pubcore = { path = "../pubcore" }
+
+[[bin]]
+name = "pubconv-cli"
+path = "src/bin/pubconv-cli.rs"

@@ -1,0 +1,854 @@
+{
+ "corpus/f11_wordart.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "GRAND OPENING",
+   "gtextSize": 40.0,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -246.0,
+    "ys": -316.0,
+    "xe": 135.0,
+    "ye": -188.87496062992125
+   }
+  },
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1626,
+   "shape_type": 136,
+   "gtextUNICODE": "Bake Sale!",
+   "gtextSize": 40.0,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0xcc6600",
+   "fillFlags": "0x100010",
+   "lineColor": "0xffcc99",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -246.0,
+    "ys": -146.0,
+    "xe": -13.0,
+    "ye": -89.5
+   }
+  },
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 2012,
+   "shape_type": 170,
+   "gtextUNICODE": "Summer Fair",
+   "gtextSize": 40.0,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 2158,
+   "fillType": 7,
+   "fillColor": "0x20452",
+   "fillBackColor": "0xccff",
+   "fillFlags": "0x100010",
+   "lineColor": "0xb2b2b2",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -246.0,
+    "ys": 24.0,
+    "xe": -37.5,
+    "ye": 80.5
+   }
+  }
+ ],
+ "wordart/font_comic.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Comic Bake Sale",
+   "gtextFont": "Comic Sans MS",
+   "gtextFlags": "0xffff5700",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 38.0,
+    "ye": -182.37496062992125
+   }
+  }
+ ],
+ "wordart/font_impact.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "IMPACT SALE",
+   "gtextFont": "Impact",
+   "gtextFlags": "0xffff5700",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -52.5,
+    "ye": -198.12503937007875
+   }
+  }
+ ],
+ "wordart/font_times.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Times Heading",
+   "gtextFont": "Times New Roman",
+   "gtextFlags": "0xffff5700",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -14.5,
+    "ye": -204.87496062992125
+   }
+  }
+ ],
+ "wordart/preset01.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Preset 1 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -182.37496062992125
+   }
+  }
+ ],
+ "wordart/preset02.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 144,
+   "gtextUNICODE": "Preset 2 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset03.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 161,
+   "gtextUNICODE": "Preset 3 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 5665,
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -228.66669291338582
+   }
+  }
+ ],
+ "wordart/preset04.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 175,
+   "gtextUNICODE": "Preset 4 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 7200,
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -237.08244094488188
+   }
+  }
+ ],
+ "wordart/preset05.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "rotation": 5898240,
+   "gtextUNICODE": "Preset 5 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff7720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -183.5,
+    "ye": -44.0
+   }
+  }
+ ],
+ "wordart/preset06.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 6 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset07.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 7 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x996633",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80000",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset08.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 8 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0xb2b2b2",
+   "fillFlags": "0x100010",
+   "lineColor": "0xcc3333",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset09.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 9 Fair",
+   "gtextSpacing": 78650,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillBackColor": "0xaaaaaa",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80000",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 18.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset10.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 10 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0xcc6600",
+   "fillFlags": "0x100010",
+   "lineColor": "0xffcc99",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset11.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "rotation": 5898240,
+   "gtextUNICODE": "Preset 11 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff7720",
+   "fillColor": "0x80",
+   "fillFlags": "0x100010",
+   "lineColor": "0x80",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -183.5,
+    "ye": -20.0
+   }
+  }
+ ],
+ "wordart/preset12.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 12 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 5,
+   "fillColor": "0xffff",
+   "fillBackColor": "0x3399ff",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80000",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset13.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Preset 13 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 6924,
+   "fillType": 7,
+   "fillColor": "0xcc0066",
+   "fillBackColor": "0xcc00cc",
+   "fillFlags": "0x100010",
+   "lineColor": "0xff99cc",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -182.37496062992125
+   }
+  }
+ ],
+ "wordart/preset14.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1290,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 14 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 2,
+   "fillColor": "0x336600",
+   "fillFlags": "0x100010",
+   "lineColor": "0x8000",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset15.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 15 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillColor": "0xed0094",
+   "fillBackColor": "0xff0000",
+   "fillFlags": "0x100010",
+   "lineColor": "0xeaeaea",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset16.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 156,
+   "gtextUNICODE": "Preset 16 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillColor": "0xff9999",
+   "fillBackColor": "0x999900",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80000",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -227.74818897637795
+   }
+  }
+ ],
+ "wordart/preset17.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1290,
+   "shape_type": 136,
+   "rotation": 5898240,
+   "gtextUNICODE": "Preset 17 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff7720",
+   "fillType": 2,
+   "fillColor": "0x96b5c4",
+   "fillFlags": "0x100010",
+   "lineColor": "0x96b5c4",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -183.5,
+    "ye": -20.0
+   }
+  }
+ ],
+ "wordart/preset18.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1290,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 18 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 2,
+   "fillColor": "0x99ccff",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset19.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 138,
+   "gtextUNICODE": "Preset 19 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillColor": "0xccffff",
+   "fillBackColor": "0x9999ff",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -228.66669291338582
+   }
+  }
+ ],
+ "wordart/preset20.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 170,
+   "gtextUNICODE": "Preset 20 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 2158,
+   "fillType": 7,
+   "fillColor": "0x20452",
+   "fillBackColor": "0xccff",
+   "fillFlags": "0x100010",
+   "lineColor": "0xb2b2b2",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -27.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset21.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 158,
+   "gtextUNICODE": "Preset 21 Fair",
+   "gtextSpacing": 52429,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0xffcc33",
+   "fillFlags": "0x100010",
+   "lineColor": "0x990000",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -237.9540157480315
+   }
+  }
+ ],
+ "wordart/preset22.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1290,
+   "shape_type": 152,
+   "gtextUNICODE": "Preset 22 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 8717,
+   "fillType": 1,
+   "fillColor": "0x808080",
+   "fillBackColor": "0xffff",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -211.513937007874
+   }
+  }
+ ],
+ "wordart/preset23.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 159,
+   "rotation": 5898240,
+   "gtextUNICODE": "Preset 23 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff7720",
+   "adjust1": 2809,
+   "fillType": 7,
+   "fillColor": "0xff00",
+   "fillBackColor": "0xffcc00",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80000",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -183.5,
+    "ye": 21.241417322834646
+   }
+  }
+ ],
+ "wordart/preset24.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 24 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset25.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1290,
+   "shape_type": 154,
+   "gtextUNICODE": "Preset 25 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 2,
+   "fillColor": "0x6600",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -218.63826771653544
+   }
+  }
+ ],
+ "wordart/preset26.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 163,
+   "gtextUNICODE": "Preset 26 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "adjust1": 16518,
+   "fillType": 7,
+   "fillBackColor": "0x707070",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -222.54543307086615
+   }
+  }
+ ],
+ "wordart/preset27.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 154,
+   "gtextUNICODE": "Preset 27 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillColor": "0x1e7ff",
+   "fillBackColor": "0x23efe",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -218.63826771653544
+   }
+  }
+ ],
+ "wordart/preset28.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "gtextUNICODE": "Preset 28 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillType": 7,
+   "fillColor": "0xf5ebdc",
+   "fillBackColor": "0x1c2655",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 42.0,
+    "ye": -245.5
+   }
+  }
+ ],
+ "wordart/preset29.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 136,
+   "rotation": 5898240,
+   "gtextUNICODE": "Preset 29 Fair",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff7720",
+   "fillColor": "0xcc",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -183.5,
+    "ye": -20.0
+   }
+  }
+ ],
+ "wordart/size_huge.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "HUGE",
+   "gtextSize": 96.0,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 75.5,
+    "ye": 7.75
+   }
+  }
+ ],
+ "wordart/size_small.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Small Size",
+   "gtextSize": 12.0,
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -166.5,
+    "ye": -258.87496062992125
+   }
+  }
+ ],
+ "wordart/style_bolditalic.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Bold Italic",
+   "gtextFont": "Arial",
+   "gtextFlags": "0xffff5730",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -62.0,
+    "ye": -203.75
+   }
+  }
+ ],
+ "wordart/style_italic.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Italic Words",
+   "gtextFont": "Arial",
+   "gtextFlags": "0xffff5710",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -45.0,
+    "ye": -204.87496062992125
+   }
+  }
+ ],
+ "wordart/text_arabic.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "مرحبا بكم",
+   "gtextFont": "Arial",
+   "gtextFlags": "0xffff5700",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -121.0,
+    "ye": -204.87496062992125
+   }
+  }
+ ],
+ "wordart/text_multiline.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Line One\rLine Two",
+   "gtextFont": "Arial Black",
+   "gtextFlags": "0xffff5720",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": -54.0,
+    "ye": -68.75
+   }
+  }
+ ],
+ "wordart/text_unicode.pub": [
+  {
+   "stream": "Escher/EscherStm",
+   "offset": 1246,
+   "shape_type": 172,
+   "gtextUNICODE": "Café Größe €5",
+   "gtextFont": "Arial",
+   "gtextFlags": "0xffff5700",
+   "fillColor": "0x0",
+   "fillFlags": "0x100010",
+   "lineFlags": "0x80008",
+   "anchor": {
+    "xs": -234.0,
+    "ys": -296.0,
+    "xe": 4.5,
+    "ye": -204.87496062992125
+   }
+  }
+ ]
+}

@@ -1,0 +1,284 @@
+{
+ "link2_fits": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 200,
+    "first": "w001 w00",
+    "last": "39 w040\r",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 199,
+    "length": 1,
+    "first": "\r",
+    "last": "\r",
+    "overflow": false
+   }
+  ],
+  "text_len": 199,
+  "size": 12
+ },
+ "link2_mid": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 380,
+    "first": "w001 w00",
+    "last": "75 w076 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 380,
+    "length": 380,
+    "first": "w077 w07",
+    "last": "51 w152 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 1299,
+  "size": 12
+ },
+ "link2_mid_b": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 380,
+    "first": "w001 w00",
+    "last": "75 w076 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 380,
+    "length": 380,
+    "first": "w077 w07",
+    "last": "51 w152 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 1499,
+  "size": 12
+ },
+ "link2_over": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 380,
+    "first": "w001 w00",
+    "last": "75 w076 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 380,
+    "length": 380,
+    "first": "w077 w07",
+    "last": "51 w152 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 4499,
+  "size": 12
+ },
+ "link3_mid": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 380,
+    "first": "w001 w00",
+    "last": "75 w076 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 380,
+    "length": 380,
+    "first": "w077 w07",
+    "last": "51 w152 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 3",
+    "left": 400.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 760,
+    "length": 380,
+    "first": "w153 w15",
+    "last": "27 w228 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 2599,
+  "size": 12
+ },
+ "link2_big": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 180,
+    "first": "w001 w00",
+    "last": "35 w036 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 180,
+    "length": 180,
+    "first": "w037 w03",
+    "last": "71 w072 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 999,
+  "size": 18
+ },
+ "link2_paras": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 360,
+    "first": "w001 w00",
+    "last": "71 w072 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 360,
+    "length": 360,
+    "first": "w073 w07",
+    "last": "43 w144 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 1299,
+  "size": 12
+ },
+ "unlinked": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 380,
+    "first": "w001 w00",
+    "last": "75 w076 ",
+    "overflow": true
+   },
+   {
+    "name": "Text Box 2",
+    "left": 230.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 1,
+    "first": "\r",
+    "last": "\r",
+    "overflow": false
+   }
+  ],
+  "text_len": 1299,
+  "size": 12
+ },
+ "link2_pages": {
+  "boxes": [
+   {
+    "name": "Text Box 1",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 0,
+    "length": 380,
+    "first": "w001 w00",
+    "last": "75 w076 ",
+    "overflow": false
+   },
+   {
+    "name": "Text Box 2",
+    "left": 60.0,
+    "top": 80.0,
+    "width": 150.0,
+    "height": 300.0,
+    "start": 380,
+    "length": 380,
+    "first": "w077 w07",
+    "last": "51 w152 ",
+    "overflow": true
+   }
+  ],
+  "text_len": 1299,
+  "size": 12
+ }
+}

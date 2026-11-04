@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PubConv</title>
+<style>
+:root {
+  --bg: #f4f6fb; --panel: #ffffff; --panel-2: #f8f9fc; --text: #141821; --muted: #5d6679; --faint: #8a93a6;
+  --line: #e3e7ef; --line-strong: #cfd5e1; --brand: #2457d6; --brand-hover: #1c49bb; --brand-soft: #e9efff;
+  --ok: #12804a; --ok-soft: #e6f5ec; --bad: #c4321f; --bad-soft: #fdecea; --warn: #a15c00; --warn-soft: #fff3e0;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 6px 20px rgba(16,24,40,.06);
+  --shadow-lg: 0 20px 60px rgba(16,24,40,.18);
+  --radius: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1218; --panel: #171b23; --panel-2: #1c212b; --text: #e8ebf2; --muted: #a2aabb; --faint: #7a8396;
+    --line: #262c38; --line-strong: #343b4a; --brand: #5b8cff; --brand-hover: #79a1ff; --brand-soft: #1b2643;
+    --ok: #4cc786; --ok-soft: #14291f; --bad: #ff7a68; --bad-soft: #321a17; --warn: #f0a94a; --warn-soft: #30230f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3); --shadow-lg: 0 20px 60px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+  .seg button.on { background: var(--line-strong); }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body {
+  font: 15px/1.45 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; overflow: hidden;
+  user-select: none; -webkit-user-select: none;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: default; opacity: .45; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+svg { flex: none; }
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 99px; border: 4px solid var(--panel); }
+::-webkit-scrollbar-thumb:hover { background: var(--faint); }
+::-webkit-scrollbar-button { display: none; }
+
+/* ---------- header ---------- */
+header {
+  height: 64px; flex: none; display: flex; align-items: center; gap: 14px;
+  padding: 0 28px; background: var(--panel); border-bottom: 1px solid var(--line);
+}
+.logo { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #3d6ff0, #1d47b8);
+  display: grid; place-items: center; color: #fff; box-shadow: 0 2px 6px rgba(36,87,214,.35); }
+.brand { font: 600 19px "Segoe UI Variable Display", "Segoe UI", sans-serif; letter-spacing: -.01em; }
+.brand small { font-weight: 400; color: var(--muted); font-size: 14px; margin-left: 10px; }
+.spacer { flex: 1; }
+.pill { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; letter-spacing: .02em; }
+.icon-btn { background: none; border: 0; border-radius: 9px; padding: 8px 12px; color: var(--muted);
+  display: inline-flex; align-items: center; gap: 8px; }
+.icon-btn:hover { background: var(--panel-2); color: var(--text); }
+
+/* ---------- buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 11px;
+  border: 1px solid var(--line-strong); background: var(--panel); padding: 0 20px; height: 44px; font-weight: 600;
+  transition: background .12s, border-color .12s, transform .05s; white-space: nowrap; }
+.btn:hover:not(:disabled) { background: var(--panel-2); border-color: var(--faint); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn.primary:hover:not(:disabled) { background: var(--brand-hover); border-color: var(--brand-hover); }
+.btn.big { height: 56px; padding: 0 30px; font-size: 16px; border-radius: 13px; }
+.btn.ghost { border-color: transparent; background: none; color: var(--muted); }
+.btn.ghost:hover:not(:disabled) { background: var(--panel); color: var(--text); border-color: var(--line); }
+.btn.danger { background: var(--panel); color: var(--bad); }
+
+/* ---------- main ---------- */
+main { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 28px 28px 0; }
+
+.empty { flex: 1; display: flex; align-items: center; justify-content: center; padding-bottom: 28px; }
+.drop {
+  width: min(860px, 100%); padding: 64px 40px 52px; text-align: center; border-radius: 22px;
+  background: var(--panel); border: 2px dashed var(--line-strong); box-shadow: var(--shadow);
+  transition: border-color .15s, background .15s;
+}
+.drop .art { width: 96px; height: 96px; margin: 0 auto 22px; border-radius: 24px; background: var(--brand-soft);
+  color: var(--brand); display: grid; place-items: center; }
+.drop h1 { font: 600 28px "Segoe UI Variable Display", "Segoe UI", sans-serif; margin: 0 0 8px; letter-spacing: -.015em; }
+.drop p { margin: 0 0 30px; color: var(--muted); font-size: 16px; }
+.drop .actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.trust { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; margin-top: 36px; color: var(--muted); font-size: 13.5px; }
+.trust span { display: inline-flex; gap: 8px; align-items: center; }
+.trust svg { color: var(--ok); }
+
+.check { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; color: var(--muted); font-size: 14px; }
+.check input { width: 18px; height: 18px; accent-color: var(--brand); margin: 0; cursor: pointer; }
+.drop .check { margin-top: 22px; }
+
+/* ---------- file list ---------- */
+.files { flex: 1; min-height: 0; display: none; flex-direction: column; }
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.toolbar h2 { font: 600 22px "Segoe UI Variable Display", "Segoe UI", sans-serif; margin: 0 12px 0 0; letter-spacing: -.01em; }
+.toolbar .count { color: var(--muted); font-weight: 400; font-size: 15px; margin-left: 8px; }
+
+.banner { display: none; align-items: center; gap: 16px; padding: 16px 20px; border-radius: var(--radius);
+  margin-bottom: 16px; background: var(--ok-soft); border: 1px solid color-mix(in srgb, var(--ok) 25%, transparent); }
+.banner.show { display: flex; }
+.banner.partial { background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 25%, transparent); }
+.banner .badge { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--ok); color: #fff; flex: none; }
+.banner.partial .badge { background: var(--warn); }
+.banner b { font-size: 16px; display: block; }
+.banner span { color: var(--muted); font-size: 14px; }
+.banner .warn-icon { display: none; }
+.banner.partial .ok-icon { display: none; }
+.banner.partial .warn-icon { display: block; }
+
+.list { flex: 1; min-height: 0; overflow: auto; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow); }
+.head, .row { display: grid; grid-template-columns: 44px minmax(220px, 1.2fr) minmax(160px, 1fr) 320px 104px; align-items: center; gap: 14px; padding: 0 20px; }
+.head { position: sticky; top: 0; z-index: 1; height: 42px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+  color: var(--faint); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.row { min-height: 64px; border-bottom: 1px solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.row:hover { background: var(--panel-2); }
+.row.done { cursor: pointer; }
+.ficon { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--brand-soft); color: var(--brand); }
+.row.failed .ficon { background: var(--bad-soft); color: var(--bad); }
+.name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dir { color: var(--muted); font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: rtl; text-align: left; }
+.dir bdi { direction: ltr; unicode-bidi: isolate; }
+.status { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; padding: 5px 12px;
+  border-radius: 99px; max-width: 100%; }
+.status span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status.ready { color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); }
+.status.busy { color: var(--brand); background: var(--brand-soft); }
+.status.ok { color: var(--ok); background: var(--ok-soft); }
+.status.bad { color: var(--bad); background: var(--bad-soft); white-space: normal; }
+.status.bad span { white-space: normal; }
+.row-actions { display: flex; justify-content: flex-end; gap: 4px; }
+.row-actions button { width: 36px; height: 36px; border-radius: 9px; border: 0; background: none; color: var(--faint); display: grid; place-items: center; }
+.row-actions button:hover { background: var(--line); color: var(--text); }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- footer action bar ---------- */
+footer { flex: none; margin: 18px 28px 24px; padding: 16px 18px 16px 22px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 18px; box-shadow: var(--shadow); display: none; align-items: center; gap: 22px; flex-wrap: wrap; }
+footer.show { display: flex; }
+.dest { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1; }
+.dest label { font-weight: 600; white-space: nowrap; }
+.seg { display: inline-flex; padding: 4px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); flex: none; }
+.seg button { border: 0; background: none; padding: 8px 16px; border-radius: 9px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.seg button.on { background: var(--panel); color: var(--text); box-shadow: 0 1px 3px rgba(16,24,40,.12); }
+.path { color: var(--muted); font-size: 13.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.path a { color: var(--brand); cursor: pointer; text-decoration: none; font-weight: 600; }
+.progress { flex: 1; min-width: 260px; display: none; flex-direction: column; gap: 8px; }
+.progress .label { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+.progress .label b { color: var(--text); }
+.bar { height: 10px; border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--brand), #6f95ff); border-radius: 99px; transition: width .3s; }
+footer.running .dest { display: none; }
+footer.running .progress { display: flex; }
+
+/* ---------- drag overlay ---------- */
+.overlay { position: fixed; inset: 0; z-index: 10; display: none; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--brand) 12%, transparent); backdrop-filter: blur(2px); }
+.overlay.show { display: flex; }
+.overlay div { padding: 40px 60px; border-radius: 22px; border: 3px dashed var(--brand); background: var(--panel); color: var(--brand);
+  font: 600 22px "Segoe UI Variable Display", "Segoe UI", sans-serif; display: flex; gap: 16px; align-items: center; box-shadow: var(--shadow-lg); }
+
+/* ---------- dialog ---------- */
+.modal { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(10,14,22,.45); }
+.modal.show { display: flex; }
+.dialog { width: min(520px, calc(100% - 48px)); background: var(--panel); border-radius: 18px; padding: 30px; box-shadow: var(--shadow-lg); user-select: text; -webkit-user-select: text; }
+.dialog h3 { margin: 0 0 4px; font: 600 22px "Segoe UI Variable Display", "Segoe UI", sans-serif; display: flex; gap: 12px; align-items: center; }
+.dialog p { color: var(--muted); margin: 12px 0; font-size: 14px; }
+.dialog .end { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.toast { position: fixed; left: 50%; bottom: 130px; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 12px 20px; border-radius: 12px; font-weight: 600; box-shadow: var(--shadow-lg); display: none; z-index: 30; max-width: 80%; }
+.toast.show { display: block; }
+
+@media (max-width: 980px) {
+  .head, .row { grid-template-columns: 40px minmax(160px, 1fr) 280px 92px; }
+  .head .c-dir, .row .dir { display: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 14l2 2 4-4"/></svg></div>
+  <div class="brand">PubConv<small>Publisher to PDF</small></div>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="donateBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg>Donate</button>
+  <button class="icon-btn" id="helpBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Help</button>
+  <button class="icon-btn" id="aboutBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>About</button>
+</header>
+
+<main>
+  <section class="empty" id="empty">
+    <div class="drop" id="drop">
+      <div class="art"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6"/><path d="M9 14l3-3 3 3"/></svg></div>
+      <h1>Convert Publisher files to PDF</h1>
+      <p>Drag .pub files or whole folders here, or choose them below.</p>
+      <div class="actions">
+        <button class="btn primary big" data-cmd="addFiles"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6M9 14h6"/></svg>Choose files</button>
+        <button class="btn big" data-cmd="addFolder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Choose a folder</button>
+      </div>
+      <label class="check"><input type="checkbox" class="recurse" checked> Include files in subfolders</label>
+      <div class="trust">
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Works offline</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Nothing is uploaded</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Your originals never change</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>WordArt and newsletters kept</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="files" id="files">
+    <div class="toolbar">
+      <h2>Files<span class="count" id="count"></span></h2>
+      <div class="spacer"></div>
+      <label class="check" style="margin-right:8px"><input type="checkbox" class="recurse" checked> Include subfolders</label>
+      <button class="btn" data-cmd="addFiles"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add files</button>
+      <button class="btn" data-cmd="addFolder"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Add folder</button>
+      <button class="btn ghost" id="clearBtn">Clear list</button>
+    </div>
+    <div class="banner" id="banner">
+      <div class="badge"><svg class="ok-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><svg class="warn-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg></div>
+      <div><b id="bannerTitle"></b><span id="bannerText"></span></div>
+      <div class="spacer"></div>
+      <button class="btn primary" id="openOutBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Open PDF folder</button>
+    </div>
+    <div class="list" id="list">
+      <div class="head"><span></span><span>Name</span><span class="c-dir">Folder</span><span>Status</span><span></span></div>
+      <div id="rows"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer">
+  <div class="dest">
+    <label>Save PDFs</label>
+    <div class="seg"><button id="segNext" class="on">Next to each original</button><button id="segFolder">In one folder</button></div>
+    <div class="path" id="destPath">Each PDF is saved beside its .pub file.</div>
+  </div>
+  <div class="progress">
+    <div class="label"><span><b id="progText">Converting…</b></span><span id="eta"></span></div>
+    <div class="bar"><i id="barFill"></i></div>
+  </div>
+  <button class="btn primary big" id="goBtn" style="min-width:250px"></button>
+</footer>
+
+<div class="overlay" id="overlay"><div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Drop to add files</div></div>
+
+<div class="modal" id="about">
+  <div class="dialog">
+    <h3><span class="logo" style="width:40px;height:40px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 14l2 2 4-4"/></svg></span><span>PubConv <span id="ver" style="font-weight:400;color:var(--muted);font-size:16px"></span></span></h3>
+    <p>Converts Microsoft Publisher (.pub) files to PDF on this PC. Nothing is uploaded and no internet connection is needed.</p>
+    <p>Includes LibreOffice technology (Mozilla Public License 2.0) and other open-source components. See the licence files in the installation folder.</p>
+    <p>PubConv is free and open source. If it saved you time, you can support it with a donation (optional, through PayPal; it unlocks nothing). Microsoft is not the recipient or sponsor of donations.</p>
+    <p>Microsoft and Publisher are trademarks of Microsoft Corporation. PubConv is not affiliated with Microsoft.</p>
+    <div class="end"><button class="btn" id="aboutDonate">Donate</button><button class="btn" id="aboutHelp">Help</button><button class="btn primary" id="aboutClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="confirm">
+  <div class="dialog">
+    <h3 id="confirmTitle"></h3>
+    <p id="confirmText"></p>
+    <div class="end"><button class="btn" id="confirmNo">Cancel</button><button class="btn primary" id="confirmYes">OK</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const ICON_DOC = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
+const ICON_PDF = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
+const ICON_DIR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+const ICON_X = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+const ICON_OK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>';
+const ICON_BAD = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>';
+
+const S = { batch: new Set(), files: [], running: false, outMode: "next", outDir: "", total: 0, done: 0, startedAt: 0, lastOut: "" };
+
+function send(cmd, extra) {
+  const msg = JSON.stringify(Object.assign({ cmd }, extra || {}));
+  if (window.ipc) window.ipc.postMessage(msg); else Mock.handle(JSON.parse(msg));
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+
+function toast(text) {
+  const t = $("toast"); t.textContent = text; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+function statusHtml(f) {
+  switch (f.state) {
+    case "busy": return '<span class="status busy"><i class="spin"></i><span>Converting…</span></span>';
+    case "ok": return `<span class="status ok">${ICON_OK}<span>${esc(f.note || "Converted")}</span></span>`;
+    case "bad": return `<span class="status bad">${ICON_BAD}<span>${esc(f.error)}</span></span>`;
+    default: return '<span class="status ready"><span>Ready</span></span>';
+  }
+}
+
+function rowHtml(f) {
+  const acts = f.state === "ok"
+    ? `<button data-act="open" title="Open PDF">${ICON_PDF}</button><button data-act="reveal" title="Show in folder">${ICON_DIR}</button>`
+    : (S.running ? "" : `<button data-act="remove" title="Remove from list">${ICON_X}</button>`);
+  const cls = f.state === "ok" ? "done" : f.state === "bad" ? "failed" : "";
+  return `<div class="row ${cls}" data-id="${f.id}" title="${f.state === "ok" ? "Double-click to open the PDF" : ""}">
+    <div class="ficon">${ICON_DOC}</div>
+    <div class="name" title="${esc(f.name)}">${esc(f.name)}</div>
+    <div class="dir" title="${esc(f.dir)}"><bdi>${esc(f.dir)}</bdi></div>
+    <div>${statusHtml(f)}</div>
+    <div class="row-actions">${acts}</div></div>`;
+}
+
+function render() {
+  const has = S.files.length > 0;
+  $("empty").style.display = has ? "none" : "flex";
+  $("files").style.display = has ? "flex" : "none";
+  $("footer").classList.toggle("show", has);
+  $("footer").classList.toggle("running", S.running);
+  $("count").textContent = has ? plural(S.files.length, "file") : "";
+  $("rows").innerHTML = S.files.map(rowHtml).join("");
+  document.querySelectorAll("[data-cmd], #clearBtn, .recurse").forEach((b) => (b.disabled = S.running));
+  renderDest();
+  renderGo();
+}
+
+function renderDest() {
+  $("segNext").classList.toggle("on", S.outMode === "next");
+  $("segFolder").classList.toggle("on", S.outMode === "folder");
+  $("destPath").innerHTML = S.outMode === "next"
+    ? "Each PDF is saved beside its .pub file."
+    : S.outDir ? `<bdi>${esc(S.outDir)}</bdi> &nbsp;<a id="changeDir">Change…</a>` : '<a id="changeDir">Choose a folder…</a>';
+  const c = $("changeDir"); if (c) c.onclick = () => send("chooseOutDir");
+}
+
+function renderGo() {
+  const go = $("goBtn");
+  if (S.running) { go.textContent = "Cancel"; go.className = "btn big"; return; }
+  go.className = "btn primary big";
+  const todo = S.files.filter((f) => f.state !== "ok").length;
+  const n = todo || S.files.length;
+  go.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>${todo && todo < S.files.length ? `Convert ${n} remaining` : `Convert ${plural(n, "file")} to PDF`}`;
+}
+
+function updateRow(f) {
+  const el = document.querySelector(`.row[data-id="${f.id}"]`);
+  if (el) el.outerHTML = rowHtml(f);
+}
+
+// the engine works on up to 8 files at a time, in list order
+function markBusy() {
+  let n = 0;
+  for (const f of S.files) {
+    if (!S.batch.has(f.id) || f.state === "ok" || f.state === "bad") continue;
+    if (n++ >= 8) break;
+    if (f.state !== "busy") { f.state = "busy"; updateRow(f); }
+  }
+}
+
+function progress() {
+  const pct = S.total ? (S.done / S.total) * 100 : 0;
+  $("barFill").style.width = pct + "%";
+  $("progText").textContent = `Converting ${S.done} of ${S.total}…`;
+  let eta = "";
+  if (S.done >= 2) {
+    const per = (Date.now() - S.startedAt) / S.done, left = ((S.total - S.done) * per) / 1000;
+    eta = left < 60 ? "Less than a minute left" : `About ${Math.round(left / 60)} min left`;
+  }
+  $("eta").textContent = eta;
+}
+
+// ---------- events from the app ----------
+window.pc = {
+  on(e) {
+    switch (e.type) {
+      case "init":
+        $("ver").textContent = e.version;
+        break;
+      case "added":
+        for (const f of e.files) S.files.push(Object.assign({ state: "ready" }, f));
+        $("banner").classList.remove("show");
+        render();
+        if (!e.files.length) toast(e.found ? "Those files are already in the list." : "No Publisher (.pub) files found there.");
+        else if (S.files.length > e.files.length) toast(`Added ${plural(e.files.length, "file")}.`);
+        break;
+      case "outDir":
+        S.outDir = e.path; S.outMode = "folder"; save(); renderDest();
+        break;
+      case "started":
+        S.running = true; S.batch = new Set(e.ids); S.total = e.ids.length; S.done = 0; S.startedAt = Date.now();
+        for (const f of S.files) if (e.ids.includes(f.id)) { f.state = "ready"; delete f.note; delete f.error; }
+        $("banner").classList.remove("show");
+        render(); progress(); markBusy();
+        break;
+      case "busy": {
+        const f = S.files.find((x) => x.id === e.id); if (f) { f.state = "busy"; updateRow(f); }
+        break;
+      }
+      case "file": {
+        const f = S.files.find((x) => x.id === e.id);
+        if (f) { f.state = e.ok ? "ok" : "bad"; f.note = e.note; f.error = e.error; f.out = e.out; updateRow(f); }
+        S.done++; progress(); markBusy();
+        break;
+      }
+      case "finished": finished(e); break;
+      case "drag": $("overlay").classList.toggle("show", e.on && !S.running); break;
+      case "error": confirmBox("Something went wrong", e.message, null); break;
+    }
+  },
+};
+
+function finished(e) {
+  S.running = false; S.lastOut = e.outDir || "";
+  render();
+  if (e.error) { confirmBox("Conversion didn't start", e.error, null); return; }
+  const b = $("banner");
+  b.classList.toggle("partial", e.failed > 0 || e.cancelled);
+  let title = `${plural(e.ok, "PDF")} created`;
+  let text = e.failed ? `${plural(e.failed, "file")} couldn't be converted. The reason is shown next to each one.` : "Double-click a file to open its PDF.";
+  if (e.cancelled) text = "Stopped before the end. Click Convert to do the rest.";
+  $("bannerTitle").textContent = title; $("bannerText").textContent = text;
+  $("openOutBtn").style.display = e.ok ? "" : "none";
+  b.classList.add("show");
+}
+
+function confirmBox(title, text, onYes, yesLabel) {
+  $("confirmTitle").textContent = title; $("confirmText").textContent = text;
+  $("confirmNo").style.display = onYes ? "" : "none";
+  $("confirmYes").textContent = onYes ? yesLabel || "OK" : "OK";
+  $("confirmYes").onclick = () => { $("confirm").classList.remove("show"); onYes && onYes(); };
+  $("confirm").classList.add("show");
+}
+
+// ---------- user actions ----------
+document.addEventListener("click", (ev) => {
+  const c = ev.target.closest("[data-cmd]");
+  if (c && !c.disabled) send(c.dataset.cmd, { recurse: recurse() });
+  const a = ev.target.closest("[data-act]");
+  if (a) {
+    const id = +a.closest(".row").dataset.id, f = S.files.find((x) => x.id === id);
+    if (a.dataset.act === "remove") { S.files = S.files.filter((x) => x.id !== id); send("remove", { ids: [id] }); render(); }
+    else if (a.dataset.act === "open") send("open", { path: f.out });
+    else if (a.dataset.act === "reveal") send("reveal", { path: f.out });
+  }
+});
+document.addEventListener("dblclick", (ev) => {
+  const r = ev.target.closest(".row.done");
+  if (r && !ev.target.closest("[data-act]")) { const f = S.files.find((x) => x.id === +r.dataset.id); send("open", { path: f.out }); }
+});
+const recurse = () => document.querySelector(".recurse").checked;
+document.querySelectorAll(".recurse").forEach((cb) => cb.addEventListener("change", () => {
+  document.querySelectorAll(".recurse").forEach((o) => (o.checked = cb.checked)); save();
+  send("setRecurse", { recurse: cb.checked });
+}));
+$("clearBtn").onclick = () => { S.files = []; send("clear"); $("banner").classList.remove("show"); render(); };
+$("segNext").onclick = () => { S.outMode = "next"; save(); renderDest(); };
+$("segFolder").onclick = () => { if (!S.outDir) send("chooseOutDir"); else { S.outMode = "folder"; save(); renderDest(); } };
+$("openOutBtn").onclick = () => S.lastOut && send("openDir", { path: S.lastOut });
+$("goBtn").onclick = () => {
+  if (S.running) { send("cancel"); $("progText").textContent = "Stopping after the current files…"; return; }
+  if (S.outMode === "folder" && !S.outDir) { send("chooseOutDir"); return; }
+  let todo = S.files.filter((f) => f.state !== "ok");
+  if (!todo.length) todo = S.files;
+  send("start", { ids: todo.map((f) => f.id), outDir: S.outMode === "folder" ? S.outDir : null });
+};
+$("donateBtn").onclick = $("aboutDonate").onclick = () => send("url", { which: "donate" });
+$("helpBtn").onclick = () => send("url", { which: "help" });
+$("aboutHelp").onclick = () => send("url", { which: "help" });
+$("aboutBtn").onclick = () => $("about").classList.add("show");
+$("aboutClose").onclick = () => $("about").classList.remove("show");
+$("confirmNo").onclick = () => $("confirm").classList.remove("show");
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") document.querySelectorAll(".modal.show").forEach((m) => m.classList.remove("show"));
+  if (e.ctrlKey && e.key.toLowerCase() === "o" && !S.running) { e.preventDefault(); send("addFiles", { recurse: recurse() }); }
+});
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+// browser fallback for drag and drop (the app itself handles drops natively)
+["dragenter", "dragover"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault()));
+document.addEventListener("drop", (e) => e.preventDefault());
+
+// remember the save choice between sessions
+function save() { try { localStorage.setItem("pc.prefs", JSON.stringify({ outMode: S.outMode, outDir: S.outDir, recurse: recurse() })); } catch (_) {} }
+try {
+  const p = JSON.parse(localStorage.getItem("pc.prefs") || "{}");
+  if (p.outDir) S.outDir = p.outDir;
+  if (p.outMode === "folder" && p.outDir) S.outMode = "folder";
+  if (p.recurse === false) document.querySelectorAll(".recurse").forEach((o) => (o.checked = false));
+} catch (_) {}
+
+// ---------- demo backend when opened in a normal browser (design preview) ----------
+const Mock = {
+  id: 0,
+  handle(m) {
+    const emit = (e) => setTimeout(() => window.pc.on(e), 10);
+    if (m.cmd === "ready") emit({ type: "init", version: "1.0.0" });
+    if (m.cmd === "addFiles" || m.cmd === "addFolder") {
+      const names = [["Spring newsletter 2019.pub", "D:\\Office Archive\\Newsletters\\2019"], ["Summer fair flyer.pub", "D:\\Office Archive\\Events"],
+        ["Volunteer certificate.pub", "D:\\Office Archive\\Certificates"], ["Harvest supper menu.pub", "D:\\Office Archive\\Events\\Harvest"],
+        ["Parish magazine – December.pub", "D:\\Office Archive\\Newsletters\\2018"], ["Live music poster.pub", "D:\\Office Archive\\Events"],
+        ["Trifold brochure (final) v3.pub", "D:\\Office Archive\\Brochures"], ["Annual report 2017.pub", "D:\\Office Archive\\Reports"]];
+      emit({ type: "added", found: names.length, files: names.map(([name, dir]) => ({ id: ++Mock.id, name, dir })) });
+    }
+    if (m.cmd === "chooseOutDir") emit({ type: "outDir", path: "D:\\Office Archive\\PDF copies" });
+    if (m.cmd === "start") {
+      emit({ type: "started", ids: m.ids });
+      const notes = ["Converted · fixed 2 WordArt headlines", "Converted · fixed 1 linked story", "Converted", "Converted · fixed 3 linked stories"];
+      let i = 0;
+      Mock.timer = setInterval(() => {
+        if (i > 0) {
+          const id = m.ids[i - 1], bad = Mock.id > 0 && i === 5;
+          window.pc.on(bad ? { type: "file", id, ok: false, error: "This file is damaged and couldn't be read." }
+                           : { type: "file", id, ok: true, note: notes[i % notes.length], out: "x.pdf" });
+        }
+        if (i < m.ids.length) window.pc.on({ type: "busy", id: m.ids[i] });
+        else { clearInterval(Mock.timer); window.pc.on({ type: "finished", ok: m.ids.length - (m.ids.length >= 5 ? 1 : 0), failed: m.ids.length >= 5 ? 1 : 0, cancelled: false, outDir: "D:\\" }); }
+        i++;
+      }, 700);
+    }
+    if (m.cmd === "cancel") { clearInterval(Mock.timer); window.pc.on({ type: "finished", ok: S.done, failed: 0, cancelled: true, outDir: "D:\\" }); }
+  },
+};
+render();
+send("ready", { recurse: recurse() });
+// design preview only: index.html#list / #running / #done shows that state
+if (!window.ipc && /list|running|done/.test(location.hash)) {
+  send("addFiles");
+  setTimeout(() => {
+    if (/running|done/.test(location.hash)) $("goBtn").click();
+    if (/running/.test(location.hash)) setTimeout(() => clearInterval(Mock.timer), 2400);
+  }, 50);
+}
+</script>
+</body>
+</html>

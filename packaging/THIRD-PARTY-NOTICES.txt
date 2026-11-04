@@ -1,0 +1,25 @@
+PubConv includes the following open-source components.
+
+Compiled into pubconv.exe / pubconv-cli.exe:
+  cfb                 compound file reading/writing      MIT
+  ttf-parser          font reading                       MIT OR Apache-2.0
+  fontdb              system font lookup                 MIT
+  rustybuzz           text shaping                       MIT
+  hyphenation         hyphenation (en-US TeX patterns)   MIT OR Apache-2.0; patterns from
+                      the TeX hyph-utf8 project under their original permissive terms
+  lopdf               PDF editing                        MIT
+  native-windows-gui  Windows user interface             MIT
+  winapi              Windows API bindings               MIT OR Apache-2.0
+  thiserror           error handling                     MIT OR Apache-2.0
+
+Shipped in runtime\ (page layout engine):
+  LibreOffice components, (c) The Document Foundation and contributors,
+  Mozilla Public License 2.0. Licence texts and notices: runtime\LICENSE.html,
+  runtime\NOTICE and runtime\readmes\. Source code: https://www.libreoffice.org/about-us/source-code/
+  This is a reduced copy (help, dictionaries, templates and other unused parts
+  removed); no LibreOffice source files were modified.
+
+How PubConv reads .pub files was worked out from Microsoft's published
+[MS-ODRAW] specification, the open-source libmspub project (MPL 2.0) and test
+files made in Microsoft Publisher. No code from any commercial converter was
+used or examined.

@@ -1,0 +1,12 @@
+# build output
+/target/
+/.build/
+/dist/
+
+# Python
+__pycache__/
+*.pyc
+
+# local scratch
+*.log
+/out_*/

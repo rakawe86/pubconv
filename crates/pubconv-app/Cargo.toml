@@ -1,0 +1,20 @@
+[package]
+name = "pubconv-app"
+version = "1.0.0"
+edition.workspace = true
+license.workspace = true
+description = "PubConv's Windows app: a full-window interface on the system WebView2."
+
+[[bin]]
+name = "pubconv"
+path = "src/main.rs"
+
+[dependencies]
+pubconv = { path = "../pubconv" }
+
+[target.'cfg(windows)'.dependencies]
+rfd = "0.17.2"
+serde_json = "1.0.154"
+tao = "0.37.2"
+winapi = { version = "0.3", features = ["winuser", "shellapi"] }
+wry = "0.57.1"
