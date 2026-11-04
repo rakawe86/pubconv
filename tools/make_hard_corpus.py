@@ -889,7 +889,125 @@ def nl_grouped_masthead(c):
     c.tb(2, prose(602, 200, "town"), 36, 460, 540, 250, 10)
 
 
+def lim_wordart_fills(c):
+    """WordArt gradients in several directions, a preset multi-colour gradient, centre
+    gradients, a texture, a picture fill and a colour-to-white gradient."""
+    c.pages(2)
+    def g(pg, text, l, t, style, variant, fore, back):
+        s = c.wa(pg, text, l, t, preset=1, font="Arial Black", size=40)
+        s.Fill.ForeColor.RGB = fore
+        s.Fill.BackColor.RGB = back
+        s.Fill.TwoColorGradient(style, variant)
+        s.Fill.ForeColor.RGB = fore
+        s.Fill.BackColor.RGB = back
+        s.Line.Visible = False
+        return s
+    red, blue, white = rgb(220, 20, 20), rgb(20, 40, 220), rgb(255, 255, 255)
+    for i, (st, v) in enumerate([(1, 1), (1, 3), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1)]):
+        g(1, f"Grad{st}v{v}", 60, 30 + i * 100, st, v, red, blue)
+    g(2, "Fade", 60, 30, 1, 1, red, white)
+    s = c.wa(2, "Rainbow", 60, 130, preset=1, font="Arial Black", size=40)
+    s.Fill.PresetGradient(1, 1, 16)
+    s.Line.Visible = False
+    s = c.wa(2, "Textured", 60, 230, preset=1, font="Arial Black", size=40)
+    s.Fill.PresetTextured(7)
+    s.Line.Visible = False
+    s = c.wa(2, "Pictured", 60, 330, preset=1, font="Arial Black", size=40)
+    s.Fill.UserPicture(str(IMG / "photo1.jpg"))
+    s.Line.Visible = False
+
+
+def lim_wordart_3d(c):
+    """WordArt with depth and shadow: Publisher's 3-D presets and a manual extrusion."""
+    c.pages(1)
+    for i, preset in enumerate([1, 5, 9, 13, 17]):
+        s = c.wa(1, f"Depth{preset}", 60, 30 + i * 90, preset=1, font="Arial Black", size=40, color=rgb(30, 90, 200))
+        s.ThreeD.SetThreeDFormat(preset)
+    s = c.wa(1, "Manual", 60, 500, preset=1, font="Arial Black", size=40, color=rgb(200, 50, 50))
+    s.ThreeD.Visible = True
+    s.ThreeD.Depth = 40
+    s.ThreeD.ExtrusionColor.RGB = rgb(40, 140, 40)
+    s = c.wa(1, "Shadow", 60, 610, preset=1, font="Arial Black", size=40, color=rgb(200, 50, 50))
+    s.Shadow.Visible = True
+    s.Shadow.OffsetX = 6
+    s.Shadow.OffsetY = 6
+
+
+def lim_tight_wrap(c):
+    """Linked columns wrapped tightly around an oval, a star and a triangle."""
+    c.pages(2)
+    C = cols(2)
+    c.story("tight", [(1, x, 40, w, 700) for x, w in C] + [(2, x, 40, w, 700) for x, w in C],
+            prose(901, 2600, "garden"), "Arial", 10)
+    for pg, kind, l, t, w, h in [(1, OVAL, 170, 120, 270, 220), (1, STAR, 170, 450, 270, 240), (2, 7, 170, 150, 270, 300)]:
+        s = c.rect(pg, l, t, w, h, rgb(250, 200, 80), kind=kind)
+        s.TextWrap.Type = 2
+
+
+def lim_mixed_story(c):
+    """A linked story mixing fonts, sizes, bold, italic, colours and alignments."""
+    c.pages(2)
+    para = prose(911, 900, "town")
+    parts = para.split("\r")
+    shp = c.story("mixed", [(1, 36, 40, 260, 700), (1, 316, 40, 260, 700), (2, 36, 40, 540, 300)], "\r".join(parts), "Georgia", 10)
+    r = shp[0].TextFrame.Story.TextRange
+    pos = 0
+    styles = [dict(Size=20, Name="Arial Black", Color=rgb(200, 30, 30), Align=2), dict(Size=9, Name="Georgia"),
+              dict(Size=14, Name="Verdana", Italic=True, Color=rgb(20, 90, 40)), dict(Size=11, Name="Times New Roman", Align=3),
+              dict(Size=10, Name="Trebuchet MS", Bold=True, Align=4)]
+    for i, para in enumerate(parts):
+        st = styles[i % len(styles)]
+        ch = r.Characters(pos + 1, len(para))
+        ch.Font.Size = st["Size"]
+        ch.Font.Name = st["Name"]
+        if st.get("Bold"): ch.Font.Bold = True
+        if st.get("Italic"): ch.Font.Italic = True
+        if "Color" in st: ch.Font.Color.RGB = st["Color"]
+        if "Align" in st: ch.ParagraphFormat.Alignment = st["Align"]
+        pos += len(para) + 1
+    # a few words inside one paragraph
+    ch = r.Characters(60, 14)
+    ch.Font.Bold = True
+    ch.Font.Size = 16
+    ch.Font.Color.RGB = rgb(30, 30, 200)
+
+
+def lim_groups(c):
+    """WordArt and text boxes inside groups: plain, nested, rotated, and on the master."""
+    c.pages(2)
+    w = c.wa(1, "Grouped", 80, 40, preset=1, font="Georgia", size=36, color=rgb(200, 30, 30))
+    r = c.rect(1, 60, 30, 300, 90, rgb(250, 230, 120))
+    r.ZOrder(1)
+    g1 = c.doc.Pages(1).Shapes.Range([r.Name, w.Name]).Group()
+    w2 = c.wa(1, "Rotated", 340, 190, preset=1, font="Arial Black", size=30, color=rgb(30, 90, 200))
+    t2 = c.tb(1, "Boxed caption in a turned group.", 340, 250, 200, 30, 12)
+    g2 = c.doc.Pages(1).Shapes.Range([w2.Name, t2.Name]).Group()
+    g2.Rotation = 30
+    w3 = c.wa(1, "Nested", 80, 340, preset=1, font="Impact", size=30, shape=9, color=rgb(30, 130, 60))
+    t3 = c.tb(1, "Inner caption", 80, 400, 150, 24, 11)
+    inner = c.doc.Pages(1).Shapes.Range([w3.Name, t3.Name]).Group()
+    t4 = c.tb(1, "Outer caption", 260, 400, 150, 24, 11)
+    c.doc.Pages(1).Shapes.Range([inner.Name, t4.Name]).Group()
+    a, b = [c.tb(2, "", 36, 40, 200, 80, 10), c.tb(2, "", 36, 200, 200, 300, 10)]
+    a.TextFrame.TextRange.Text = prose(921, 300, "town")
+    a.TextFrame.NextLinkedTextFrame = b.TextFrame
+    w5 = c.wa(2, "With links", 300, 40, preset=1, font="Georgia", size=30, color=rgb(120, 30, 150))
+    c.doc.Pages(2).Shapes.Range([a.Name, w5.Name]).Group()
+    w6 = c.wa("M", "Master", 400, 720, preset=1, font="Arial Black", size=20, color=rgb(90, 90, 90))
+    t6 = c.tb("M", "On every page", 250, 730, 140, 20, 9)
+    c.doc.MasterPages(1).Shapes.Range([w6.Name, t6.Name]).Group()
+
+
+def lim_rtl(c):
+    """Arabic and Hebrew WordArt, alone, mixed with numbers and Latin, on two lines."""
+    c.pages(1)
+    for i, (t, sh) in enumerate([("مرحبا بكم", 1), ("חג שמח לכולם", 1), ("مهرجان 2026 الربيع", 1), ("سوق PubConv كبير", 9),
+                                 ("שלום 123 עולם", 21), ("السطر الأول\rالسطر الثاني", 1)]):
+        c.wa(1, t, 60, 30 + i * 110, preset=1, font="Arial", size=36, shape=sh)
+
+
 DOCS = {f.__name__: f for f in [
+    lim_wordart_fills, lim_wordart_3d, lim_tight_wrap, lim_mixed_story, lim_groups, lim_rtl,
     nl_parish_8p, nl_school_12p, nl_backwards_6p, nl_tiny_boxes, nl_overflow, nl_fonts_mix, nl_columns_in_box,
     nl_wrap_pictures, nl_interleaved_10p, nl_grouped_masthead, wa_shapes_gallery, wa_rotated_styles,
     wa_master_pages, wa_unicode, wa_dense_flyer, programme_event_8p, church_bulletin_4p, yearbook_6p,

@@ -151,7 +151,15 @@ impl Measurer {
         })
     }
 
+    /// Baseline below the top of its line. As with `line_em`, Publisher goes by the OS/2
+    /// typographic metrics: the ascender plus the line gap, when the table has them.
     pub fn ascent(&self) -> f64 {
-        self.font.face().map_or(self.size * 0.9, |f| f.ascender() as f64 * self.size / f.units_per_em() as f64)
+        self.font.face().map_or(self.size * 0.9, |f| {
+            let units = match f.tables().os2 {
+                Some(t) if t.version >= 2 => t.typographic_ascender() as f64 + t.typographic_line_gap() as f64,
+                _ => f.ascender() as f64,
+            };
+            units * self.size / f.units_per_em() as f64
+        })
     }
 }

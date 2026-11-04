@@ -13,6 +13,7 @@ hyphenation = { version = "0.8", features = ["embed_en-us"] }
 thiserror = "2"
 lopdf = { version = "0.34", default-features = false, features = ["nom_parser"] }
 rustybuzz = "0.20.1"
+unicode-bidi = { version = "0.3", default-features = false, features = ["hardcoded-data"] }
 
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }

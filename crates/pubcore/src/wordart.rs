@@ -17,8 +17,34 @@ pub mod pid {
     pub const FILL_TYPE: u16 = 0x0180;
     pub const FILL_COLOR: u16 = 0x0181;
     pub const FILL_BACK_COLOR: u16 = 0x0183;
+    pub const FILL_BLIP: u16 = 0x0186;
+    pub const FILL_ANGLE: u16 = 0x018B;
+    pub const FILL_FOCUS: u16 = 0x018C;
+    pub const FILL_TO_LEFT: u16 = 0x018D;
+    pub const FILL_TO_TOP: u16 = 0x018E;
+    pub const FILL_TO_RIGHT: u16 = 0x018F;
+    pub const FILL_TO_BOTTOM: u16 = 0x0190;
     pub const FILL_FLAGS: u16 = 0x01BF;
     pub const LINE_COLOR: u16 = 0x01C0;
+    pub const LINE_WIDTH: u16 = 0x01CB;
+    pub const LINE_FLAGS: u16 = 0x01FF;
+    pub const SHADOW_COLOR: u16 = 0x0201;
+    pub const SHADOW_X: u16 = 0x0205;
+    pub const SHADOW_Y: u16 = 0x0206;
+    pub const SHADOW_FLAGS: u16 = 0x023F;
+    pub const THREED_EXTRUDE_BACK: u16 = 0x0285;
+    pub const THREED_EXTRUSION_COLOR: u16 = 0x0287;
+    pub const THREED_OBJECT_FLAGS: u16 = 0x02BF;
+    pub const THREED_ROT_Y: u16 = 0x02C0;
+    pub const THREED_ROT_X: u16 = 0x02C1;
+    pub const THREED_VIEW_X: u16 = 0x02CB;
+    pub const THREED_VIEW_Y: u16 = 0x02CC;
+    pub const THREED_VIEW_Z: u16 = 0x02CD;
+    pub const THREED_ORIGIN_X: u16 = 0x02CE;
+    pub const THREED_ORIGIN_Y: u16 = 0x02CF;
+    pub const THREED_SKEW_ANGLE: u16 = 0x02D0;
+    pub const THREED_SKEW_AMOUNT: u16 = 0x02D1;
+    pub const THREED_STYLE_FLAGS: u16 = 0x02FF;
 }
 
 const GTEXT_PIDS: [u16; 8] = [0x00C0, 0x00C1, 0x00C2, 0x00C3, 0x00C4, 0x00C5, 0x00C6, 0x00FF];
@@ -57,6 +83,13 @@ pub struct WordArt {
     pub anchor: Option<Anchor>,
     /// Contents sequence number (for finding its page).
     pub seq: Option<u32>,
+    /// Inside a group: the outermost group's sequence number, which is what pages list.
+    pub root_seq: Option<u32>,
+    /// All its drawing properties (gradient, 3-D, shadow...).
+    pub props: Fopt,
+    /// Mirrored left-right / top-bottom.
+    pub flip_h: bool,
+    pub flip_v: bool,
 }
 
 impl WordArt {
@@ -84,11 +117,20 @@ impl WordArt {
             filled: !(fill_flags & FILL_USE_FILLED != 0 && fill_flags & FILL_FILLED == 0),
             anchor: None,
             seq: None,
+            root_seq: None,
+            props: f.clone(),
+            flip_h: false,
+            flip_v: false,
         }
     }
 
     pub fn is_vertical(&self) -> bool {
         (self.rotation - 90.0).abs() < 1.0
+    }
+
+    /// The sequence number the page lists for this shape.
+    pub fn page_seq(&self) -> Option<u32> {
+        self.root_seq.or(self.seq)
     }
 }
 
@@ -97,13 +139,18 @@ pub fn wordart_shapes(file: &PubFile) -> Vec<WordArt> {
     let mut out = Vec::new();
     for (name, data) in file.escher_streams() {
         let short = name.trim_start_matches('/');
+        let placed = escher::grouped(data);
         for start in escher::shape_containers(data) {
             let Some(h) = escher::header_at(data, start) else { continue };
             let mut shape_type = 0;
+            let mut flags = 0;
             let mut current: Option<WordArt> = None;
             for rec in escher::walk(data, start + 8, start + 8 + h.len as usize) {
                 match rec.header.rtype {
-                    FSP => shape_type = rec.header.inst,
+                    FSP => {
+                        shape_type = rec.header.inst;
+                        flags = crate::u32_at(rec.body(data), 4).unwrap_or(0);
+                    }
                     FOPT => {
                         let f = Fopt::parse(rec.body(data), rec.header.inst);
                         if f.values.keys().any(|k| GTEXT_PIDS.contains(k)) {
@@ -122,6 +169,14 @@ pub fn wordart_shapes(file: &PubFile) -> Vec<WordArt> {
                     }
                     _ => {}
                 }
+            }
+            if let Some(w) = current.as_mut() {
+                (w.flip_h, w.flip_v) = (flags & 0x40 != 0, flags & 0x80 != 0);
+            }
+            if let (Some(w), Some(p)) = (current.as_mut(), placed.get(&start)) {
+                w.anchor = Some(p.anchor);
+                w.rotation += p.rotation;
+                w.root_seq = p.root_seq;
             }
             out.extend(current);
         }

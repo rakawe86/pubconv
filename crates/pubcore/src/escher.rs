@@ -14,6 +14,10 @@ pub const FOPT: u16 = 0xF00B;
 pub const TERTIARY_FOPT: u16 = 0xF122;
 pub const CLIENT_ANCHOR: u16 = 0xF010;
 pub const CLIENT_DATA: u16 = 0xF011;
+pub const SPGR_CONTAINER: u16 = 0xF003;
+pub const FSPGR: u16 = 0xF009;
+pub const CHILD_ANCHOR: u16 = 0xF00F;
+const ROTATION_PID: u16 = 0x0004;
 pub const EMU_PER_PT: f64 = 12700.0;
 /// Client-data field holding the shape's Contents sequence number.
 pub const FIELD_SHAPE_SEQ: u16 = 0x6801;
@@ -94,7 +98,7 @@ pub fn shape_containers(data: &[u8]) -> Vec<usize> {
 }
 
 /// A shape's property table: simple values plus complex (variable-size) data.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Fopt {
     pub values: BTreeMap<u16, u32>,
     pub complex: BTreeMap<u16, Vec<u8>>,
@@ -153,15 +157,20 @@ pub struct Shape {
     pub anchor: Option<Anchor>,
     pub fopt: Fopt,
     pub tertiary: Fopt,
+    /// Inside a group: the outermost group's sequence number (what the page lists).
+    pub root_seq: Option<u32>,
+    /// Degrees the enclosing groups turn this shape.
+    pub group_rotation: f64,
 }
 
 /// Every shape container in the file's Escher streams.
 pub fn shapes(file: &crate::PubFile) -> Vec<Shape> {
     let mut out = Vec::new();
     for (_, data) in file.escher_streams() {
+        let placed = grouped(data);
         for start in shape_containers(data) {
             let Some(h) = header_at(data, start) else { continue };
-            let mut s = Shape { offset: start, shape_type: 0, seq: None, anchor: None, fopt: Fopt::default(), tertiary: Fopt::default() };
+            let mut s = Shape { offset: start, shape_type: 0, seq: None, anchor: None, fopt: Fopt::default(), tertiary: Fopt::default(), root_seq: None, group_rotation: 0.0 };
             for rec in walk(data, start + 8, start + 8 + h.len as usize) {
                 match rec.header.rtype {
                     FSP => s.shape_type = rec.header.inst,
@@ -172,10 +181,145 @@ pub fn shapes(file: &crate::PubFile) -> Vec<Shape> {
                     _ => {}
                 }
             }
+            if let Some(p) = placed.get(&start) {
+                (s.anchor, s.root_seq, s.group_rotation) = (Some(p.anchor), p.root_seq, p.rotation);
+            }
             out.push(s);
         }
     }
     out
+}
+
+/// The picture at 1-based `index` of the file's picture store: its record type
+/// and the record's body. Publisher keeps the bytes in the delay stream.
+pub fn blip(file: &crate::PubFile, index: u32) -> Option<(u16, u16, Vec<u8>)> {
+    const BSTORE: u16 = 0xF001;
+    const BSE: u16 = 0xF007;
+    let main = file.stream(crate::ole::ESCHER)?;
+    let store = walk(main, 0, main.len()).into_iter().find(|r| r.header.rtype == BSTORE)?;
+    let entries = walk(main, store.body, store.body + store.header.len as usize);
+    let bse = entries.iter().filter(|r| r.header.rtype == BSE).nth(index.checked_sub(1)? as usize)?;
+    let body = bse.body(main);
+    let (data, at) = if body.len() > 36 {
+        (body, 36) // stored right after the entry
+    } else {
+        (file.stream(crate::ole::ESCHER_DELAY)?, u32_at(body, 28)? as usize)
+    };
+    let h = header_at(data, at)?;
+    let raw = data.get(at + 8..at + 8 + h.len as usize)?;
+    Some((h.rtype, h.inst, raw.to_vec()))
+}
+
+/// Where a shape inside a group really is on the page.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Placed {
+    pub anchor: Anchor,
+    pub rotation: f64,
+    pub root_seq: Option<u32>,
+}
+
+/// A group's own coordinates and where they land on the page.
+#[derive(Clone, Copy)]
+struct Frame {
+    /// Group coordinates: left, top, right, bottom.
+    rect: [f64; 4],
+    /// The group's box on the page before turning, in points.
+    area: Anchor,
+    rotation: f64,
+    root_seq: Option<u32>,
+}
+
+impl Frame {
+    /// Map a child's rectangle (in this group's coordinates) to the page.
+    fn place(&self, r: [f64; 4]) -> Anchor {
+        let (rw, rh) = (self.rect[2] - self.rect[0], self.rect[3] - self.rect[1]);
+        let (sx, sy) = (if rw != 0.0 { self.area.width() / rw } else { 0.0 }, if rh != 0.0 { self.area.height() / rh } else { 0.0 });
+        let a = Anchor {
+            xs: self.area.xs + (r[0] - self.rect[0]) * sx,
+            ys: self.area.ys + (r[1] - self.rect[1]) * sy,
+            xe: self.area.xs + (r[2] - self.rect[0]) * sx,
+            ye: self.area.ys + (r[3] - self.rect[1]) * sy,
+        };
+        // a turned group swings its children around its centre
+        let (gx, gy) = ((self.area.xs + self.area.xe) / 2.0, (self.area.ys + self.area.ye) / 2.0);
+        let (cx, cy) = ((a.xs + a.xe) / 2.0, (a.ys + a.ye) / 2.0);
+        let (sin, cos) = self.rotation.to_radians().sin_cos();
+        let (nx, ny) = (gx + (cx - gx) * cos - (cy - gy) * sin, gy + (cx - gx) * sin + (cy - gy) * cos);
+        Anchor { xs: a.xs + nx - cx, ys: a.ys + ny - cy, xe: a.xe + nx - cx, ye: a.ye + ny - cy }
+    }
+}
+
+/// Shapes nested in groups, by shape container offset. Their position is
+/// relative to the group, so it has to be worked out from the outside in.
+// shortcut: flipped groups aren't mirrored, add when a file needs it (FSP flags 0x40/0x80).
+pub fn grouped(data: &[u8]) -> BTreeMap<usize, Placed> {
+    let mut out = BTreeMap::new();
+    let mut pos = 0;
+    while pos + 8 <= data.len() {
+        match header_at(data, pos) {
+            Some(h) if h.rtype == SPGR_CONTAINER && h.ver == 0xF && pos + 8 + h.len as usize <= data.len() => {
+                visit_group(data, pos + 8, pos + 8 + h.len as usize, None, &mut out, 0);
+                pos += 8 + h.len as usize;
+            }
+            _ => pos += 1,
+        }
+    }
+    out
+}
+
+fn visit_group(data: &[u8], start: usize, end: usize, parent: Option<Frame>, out: &mut BTreeMap<usize, Placed>, depth: u32) {
+    if depth > 16 {
+        return;
+    }
+    let mut frame: Option<Frame> = None;
+    let mut pos = start;
+    let mut first = true;
+    while pos + 8 <= end {
+        let Some(h) = header_at(data, pos) else { break };
+        let (body, next) = (pos + 8, (pos + 8).saturating_add(h.len as usize));
+        if next > end {
+            break;
+        }
+        if h.rtype == SPGR_CONTAINER {
+            visit_group(data, body, next, frame.or(parent), out, depth + 1);
+        } else if h.rtype == SP_CONTAINER {
+            let mut rect = None;
+            let mut child = None;
+            let mut client = None;
+            let mut seq = None;
+            let mut rotation = 0.0;
+            for r in walk(data, body, next) {
+                let d = r.body(data);
+                let box_of = |d: &[u8]| Some([i32_at(d, 0)? as f64, i32_at(d, 4)? as f64, i32_at(d, 8)? as f64, i32_at(d, 12)? as f64]);
+                match r.header.rtype {
+                    FSPGR => rect = box_of(d),
+                    CHILD_ANCHOR => child = box_of(d),
+                    CLIENT_ANCHOR => client = Anchor::parse(d),
+                    CLIENT_DATA => seq = client_fields(d).get(&FIELD_SHAPE_SEQ).map(|&v| v as u32),
+                    FOPT => rotation = Fopt::parse(d, r.header.inst).get_i32(ROTATION_PID).map_or(0.0, |v| v as f64 / 65536.0),
+                    _ => {}
+                }
+            }
+            // where this shape lands: client anchors are page positions, child anchors are the parent's coordinates
+            let context = frame.or(parent);
+            let area = match (child, context) {
+                (Some(c), Some(f)) => Some(f.place(c)),
+                _ => client,
+            };
+            let turned = context.map_or(0.0, |f| f.rotation);
+            let root_seq = context.and_then(|f| f.root_seq).or(seq);
+            if first && rect.is_some() {
+                // the group's own header shape; the top-level drawing's has no box at all
+                if let (Some(rect), Some(area)) = (rect, area) {
+                    frame = Some(Frame { rect, area, rotation: turned + rotation, root_seq });
+                }
+            } else if let (Some(f), Some(area)) = (context, area.filter(|_| child.is_some())) {
+                out.insert(pos, Placed { anchor: area, rotation: f.rotation, root_seq: f.root_seq.or(seq) });
+            }
+        }
+        first = false;
+        pos = next;
+    }
 }
 
 /// Shape position in points, measured from the page centre.

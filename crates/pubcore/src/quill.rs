@@ -72,6 +72,8 @@ mod style_id {
     pub const ITALIC: u8 = 0x03;
     pub const TEXT_SIZE: u8 = 0x0C;
     pub const FONT_INDEX_CONTAINER: u8 = 0x24;
+    /// Text colour: a list holding an index into the "PL  " chunk.
+    pub const COLOR_INDEX_CONTAINER: u8 = 0x44;
     pub const PARA_ALIGNMENT: u8 = 0x04;
     pub const PARA_SPACE_BEFORE: u8 = 0x12;
     pub const PARA_SPACE_AFTER: u8 = 0x13;
@@ -85,6 +87,7 @@ pub struct CharStyle {
     pub size: Option<f64>,
     pub bold: bool,
     pub italic: bool,
+    pub color: Option<[f64; 3]>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -122,11 +125,12 @@ impl CharStyle {
             size: self.size.or(base.size),
             bold: self.bold || base.bold,
             italic: self.italic || base.italic,
+            color: self.color.or(base.color),
         }
     }
 }
 
-fn char_style(d: &[u8], pos: usize, fonts: &[String]) -> CharStyle {
+fn char_style(d: &[u8], pos: usize, fonts: &[String], palette: &[[f64; 3]]) -> CharStyle {
     use crate::contents::length_prefixed;
     let mut s = CharStyle::default();
     for b in length_prefixed(d, pos) {
@@ -139,6 +143,10 @@ fn char_style(d: &[u8], pos: usize, fonts: &[String]) -> CharStyle {
                 let idx = b.children(d).into_iter().find(|c| c.btype == 0x88)
                     .and_then(|c| c.children(d).first().and_then(|x| x.value));
                 s.font = idx.and_then(|i| fonts.get(i as usize).cloned());
+            }
+            style_id::COLOR_INDEX_CONTAINER => {
+                let idx = b.children(d).into_iter().find(|k| k.id == 0).and_then(|k| k.value);
+                s.color = idx.and_then(|i| palette.get(i as usize).copied());
             }
             _ => {}
         }
@@ -171,6 +179,24 @@ fn para_style(d: &[u8], pos: usize) -> ParaStyle {
     s
 }
 
+/// The text colour list ("PL  " chunk): length-prefixed entries end to end,
+/// each with its RGB as block 1; index by a run's colour.
+fn palette(d: &[u8], c: &Chunk) -> Vec<[f64; 3]> {
+    use crate::contents::length_prefixed;
+    let mut out = Vec::new();
+    let mut pos = c.offset + 12; // past a count and an offset
+    while pos + 4 <= c.offset + c.length {
+        let Some(len) = u32_at(d, pos).map(|v| v as usize).filter(|&l| l >= 4) else { break };
+        let v = length_prefixed(d, pos).into_iter().find(|b| b.id == 1).and_then(|b| b.value).unwrap_or(0);
+        // high byte set: a scheme colour, not an RGB (entry 0 is "automatic"); black is what those are in practice
+        // shortcut: scheme colours print black; resolve them through the document's colour scheme if a file needs it.
+        let v = if v >> 24 != 0 { 0 } else { v };
+        out.push([(v & 0xFF) as f64 / 255.0, ((v >> 8) & 0xFF) as f64 / 255.0, ((v >> 16) & 0xFF) as f64 / 255.0]);
+        pos += len;
+    }
+    out
+}
+
 fn font_names(d: &[u8], c: &Chunk) -> Vec<String> {
     let Some(n) = u32_at(d, c.offset + 4).map(|v| v as usize) else { return Vec::new() };
     let mut pos = c.offset + 8 + 12 + 4 * n;
@@ -195,7 +221,7 @@ fn fdp_runs(d: &[u8], c: &Chunk) -> Vec<(usize, usize)> {
 
 /// Document default styles (second STSH chunk): character and paragraph
 /// styles alternate; index 0/1 is the "Normal" style.
-fn defaults(d: &[u8], cs: &[Chunk], fonts: &[String]) -> (Vec<CharStyle>, Vec<ParaStyle>) {
+fn defaults(d: &[u8], cs: &[Chunk], fonts: &[String], palette: &[[f64; 3]]) -> (Vec<CharStyle>, Vec<ParaStyle>) {
     let (mut chars, mut paras) = (Vec::new(), Vec::new());
     let Some(c) = cs.iter().filter(|c| c.name == "STSH").nth(1) else { return (chars, paras) };
     let Some(n) = u32_at(d, c.offset + 4).map(|v| v as usize) else { return (chars, paras) };
@@ -203,7 +229,7 @@ fn defaults(d: &[u8], cs: &[Chunk], fonts: &[String]) -> (Vec<CharStyle>, Vec<Pa
         let Some(off) = u32_at(d, c.offset + 20 + 4 * i) else { break };
         let pos = c.offset + 20 + off as usize + 2;
         if i % 2 == 0 {
-            chars.push(char_style(d, pos, fonts));
+            chars.push(char_style(d, pos, fonts, palette));
         } else {
             paras.push(para_style(d, pos));
         }
@@ -233,12 +259,13 @@ pub fn styled_stories(file: &PubFile) -> Result<(Vec<StyledStory>, Defaults)> {
     let cs = chunks(data);
     let text = cs.iter().find(|c| c.name == "TEXT").ok_or(Error::Malformed("Quill: no TEXT chunk"))?;
     let fonts = cs.iter().find(|c| c.name == "FONT").map(|c| font_names(data, c)).unwrap_or_default();
-    let (dc, dp) = defaults(data, &cs, &fonts);
+    let palette = cs.iter().find(|c| c.name == "PL  ").map(|c| palette(data, c)).unwrap_or_default();
+    let (dc, dp) = defaults(data, &cs, &fonts, &palette);
     let defaults = Defaults { char: dc.into_iter().next().unwrap_or_default(), para: dp.into_iter().next().unwrap_or_default() };
     let to_char = |end: usize| end.saturating_sub(text.offset) / 2;
     let char_runs: Vec<(usize, CharStyle)> = cs.iter().filter(|c| c.name == "FDPC")
         .flat_map(|c| fdp_runs(data, c))
-        .map(|(e, s)| (to_char(e), char_style(data, s, &fonts)))
+        .map(|(e, s)| (to_char(e), char_style(data, s, &fonts, &palette)))
         .collect();
     let para_runs: Vec<(usize, ParaStyle)> = cs.iter().filter(|c| c.name == "FDPP")
         .flat_map(|c| fdp_runs(data, c))

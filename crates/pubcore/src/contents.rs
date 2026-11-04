@@ -21,6 +21,9 @@ pub mod block_id {
     pub const SHAPE_CONTINUED_FROM: u8 = 0x32;
     /// Shapes this text box's text wraps around: a list of sequence numbers.
     pub const SHAPE_WRAP_AROUND: u8 = 0x47;
+    /// How text wraps around this shape: see `wrap`. Absent means square.
+    pub const SHAPE_WRAP_MODE: u8 = 0x04;
+    pub const SHAPE_WRAP_TOP_BOTTOM: u8 = 0x05;
     pub const DOCUMENT_SIZE: u8 = 0x12;
     pub const DOCUMENT_WIDTH: u8 = 0x01;
     pub const DOCUMENT_HEIGHT: u8 = 0x02;
@@ -158,6 +161,14 @@ pub struct TextLink {
     pub story_id: u32,
 }
 
+/// Wrap settings, as found by setting each one in Publisher and comparing the files.
+pub mod wrap {
+    pub const NONE: u32 = 0x100;
+    pub const TIGHT: u32 = 0x102;
+    pub const THROUGH: u32 = 0x103;
+    pub const TOP_BOTTOM: u32 = 0x104;
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct ShapeChunk {
     pub seq: u32,
@@ -170,7 +181,10 @@ pub struct ShapeChunk {
     pub continued_from: bool,
     /// Sequence numbers of shapes the text wraps around.
     pub wrap_around: Vec<u32>,
+    /// See `wrap`; `None` means square.
+    pub wrap_mode: Option<u32>,
 }
+
 
 /// Every shape chunk (shapes, groups, tables, logos), in sequence order.
 pub fn shape_chunks(file: &PubFile) -> Vec<ShapeChunk> {
@@ -181,7 +195,7 @@ pub fn shape_chunks(file: &PubFile) -> Vec<ShapeChunk> {
         if ![SHAPE, ALTSHAPE, GROUP, LOGO, TABLE].contains(&c.ctype) {
             continue;
         }
-        let mut s = ShapeChunk { seq: c.seq, ctype: c.ctype, text: None, width: None, height: None, continued_on: false, continued_from: false, wrap_around: Vec::new() };
+        let mut s = ShapeChunk { seq: c.seq, ctype: c.ctype, text: None, width: None, height: None, continued_on: false, continued_from: false, wrap_around: Vec::new(), wrap_mode: None };
         for b in length_prefixed(d, c.offset) {
             match (b.id, b.value) {
                 (block_id::SHAPE_TEXT_ID, Some(v)) if b.data_len == 4 => {
@@ -191,6 +205,7 @@ pub fn shape_chunks(file: &PubFile) -> Vec<ShapeChunk> {
                 (block_id::SHAPE_HEIGHT, Some(v)) => s.height = Some(v as f64 / EMU_PER_PT),
                 (block_id::SHAPE_CONTINUED_ON, _) => s.continued_on = true,
                 (block_id::SHAPE_CONTINUED_FROM, _) => s.continued_from = true,
+                (block_id::SHAPE_WRAP_MODE | block_id::SHAPE_WRAP_TOP_BOTTOM, Some(v)) if b.btype == 0x10 => s.wrap_mode = Some(v),
                 (block_id::SHAPE_WRAP_AROUND, None) => {
                     s.wrap_around = b.children(d).into_iter().filter(|k| k.btype == 0x68).filter_map(|k| k.value).collect();
                 }

@@ -53,6 +53,6 @@ fn main() {
                 }
             }
         }
-        println!("{{\"story\":{},\"len\":{len},\"placed\":{placed},\"starts\":[{}],\"flags\":[{}],\"align\":{:?}}}", chain.story_id, starts.join(","), flags.join(","), f.align.map_or(-1, |a| a as i64));
+        println!("{{\"story\":{},\"len\":{len},\"placed\":{placed},\"starts\":[{}],\"flags\":[{}],\"align\":{:?}}}", chain.story_id, starts.join(","), flags.join(","), f.boxes.iter().flat_map(|b| b.lines.first()).next().and_then(|l| l.align).map_or(-1, |a| a as i64));
     }
 }

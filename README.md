@@ -77,11 +77,11 @@ Build output goes to `target/`, `.build/` and `dist/`, which Git ignores.
 - **Hard documents (`tools/hard_compare.py`):** 25 complex Publisher documents in `testdata/hard` (8–60 page newsletters with jumping stories, all 40 WordArt shapes, 11 languages, columns, booklets, tri-folds), scored against Publisher's own PDFs and against plain LibreOffice. Latest: flow 98.4%, text recall 99.4%, duplicated text 0.1% (LibreOffice: 64%, 87%, 37%); 162 of 308 linked boxes start on exactly Publisher's character. Remaining differences are mostly hyphenation: Publisher uses Microsoft's own dictionary, which no public pattern set reproduces. `tools/tune_flow.py` compares each box's starting character with Publisher's.
 
 ## Known limits
-- **WordArt styling:** gradients are drawn in their stronger colour, textures in dark grey; 3D effects are not drawn. A few script fonts on strongly bent shapes come out hard to read.
-- **Text wrap:** linked text flows around the bounding box of pictures and shapes (tight wrap follows the box, not the outline).
-- **Mixed styles:** a linked story with mixed fonts or sizes uses its first style.
-- **Grouped shapes:** WordArt and text boxes inside groups are left to the page engine.
-- **Right-to-left text:** Arabic and Hebrew WordArt is drawn but not yet searchable.
+These are the rare cases that still differ from Publisher:
+- **WordArt fills:** a fill picture that is a transparent PNG, BMP or EMF is drawn in dark grey. Pattern fills use their main colour. 3D lighting is approximate, so some metallic presets look brighter than in Publisher. Text around a full circle is approximate.
+- **Text wrap:** tight wrap follows common shapes, freeforms and edited wrap outlines. Less common preset shapes (hearts, clouds, callouts) wrap around their box.
+- **Linked text:** fonts, sizes, bold, italic, colours, alignment and spacing are kept. Underlines, indents, bullets and tabs in linked text are not drawn, and theme colours print black.
+- **Groups:** a flipped group isn't mirrored, and a filled text box or picture in a turned group is left to the page engine, which doesn't turn it.
 
 ## Licence
 MPL-2.0. Bundled LibreOffice components are MPL-2.0; other dependencies are MIT/Apache. See `packaging/THIRD-PARTY-NOTICES.txt`.
