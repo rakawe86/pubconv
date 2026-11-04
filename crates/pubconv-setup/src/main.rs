@@ -17,7 +17,7 @@ use serde_json::{json, Value};
 use tao::dpi::LogicalSize;
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
-use tao::platform::windows::{IconExtWindows, WindowBuilderExtWindows};
+use tao::platform::windows::IconExtWindows;
 use tao::window::{Icon, WindowBuilder};
 use winapi::um::shlobj::{SHGetFolderPathW, CSIDL_DESKTOPDIRECTORY, CSIDL_LOCAL_APPDATA, CSIDL_PROGRAMS};
 use wry::http::{header::CONTENT_TYPE, Response};
@@ -117,16 +117,17 @@ fn wide(s: &std::ffi::OsStr) -> Vec<u16> {
 
 fn create_shortcut(lnk: &Path, target: &Path) -> Result<(), String> {
     use winapi::shared::winerror::SUCCEEDED;
-    use winapi::um::combaseapi::{CoCreateInstance, CoInitializeEx, CLSCTX_INPROC_SERVER};
+    use winapi::shared::wtypesbase::CLSCTX_INPROC_SERVER;
+    use winapi::um::combaseapi::{CoCreateInstance, CoInitializeEx};
     use winapi::um::objbase::COINIT_APARTMENTTHREADED;
     use winapi::um::objidl::IPersistFile;
-    use winapi::um::shobjidl_core::{CLSID_ShellLink, IShellLinkW};
-    use winapi::Interface;
+    use winapi::um::shobjidl_core::{IShellLinkW, ShellLink};
+    use winapi::{Class, Interface};
     let failed = || format!("Couldn't create the shortcut {}.", lnk.display());
     unsafe {
         CoInitializeEx(std::ptr::null_mut(), COINIT_APARTMENTTHREADED);
         let mut link: *mut IShellLinkW = std::ptr::null_mut();
-        let hr = CoCreateInstance(&CLSID_ShellLink, std::ptr::null_mut(), CLSCTX_INPROC_SERVER, &IShellLinkW::uuidof(), &mut link as *mut _ as *mut _);
+        let hr = CoCreateInstance(&ShellLink::uuidof(), std::ptr::null_mut(), CLSCTX_INPROC_SERVER, &IShellLinkW::uuidof(), &mut link as *mut _ as *mut _);
         if !SUCCEEDED(hr) {
             return Err(failed());
         }
@@ -253,7 +254,6 @@ fn main() {
         .with_maximizable(false)
         .with_visible(false) // shown once the page has drawn, so there's no white flash
         .with_window_icon(Icon::from_resource(1, None).ok())
-        .with_skip_taskbar(false)
         .build(&event_loop)
     {
         Ok(w) => w,
