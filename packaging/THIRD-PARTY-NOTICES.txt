@@ -10,6 +10,9 @@ Compiled into pubconv.exe / pubconv-cli.exe:
   lopdf               PDF editing                        MIT
   native-windows-gui  Windows user interface             MIT
   winapi              Windows API bindings               MIT OR Apache-2.0
+  tao, wry            window and web view                MIT OR Apache-2.0
+  flate2              decompression (installer)          MIT OR Apache-2.0
+  WebView2 loader     Microsoft, linked into the exes    BSD-3-Clause
   thiserror           error handling                     MIT OR Apache-2.0
 
 Shipped in runtime\ (page layout engine):

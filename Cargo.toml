@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/pubcore", "crates/pubconv", "crates/pubconv-app"]
+members = ["crates/pubcore", "crates/pubconv", "crates/pubconv-app", "crates/pubconv-setup"]
 
 [workspace.package]
 edition = "2021"

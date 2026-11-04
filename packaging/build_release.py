@@ -1,5 +1,6 @@
 """Build every PubConv deliverable:
 
+  dist/PubConv-Setup-1.0.0.exe           installer (GitHub release)
   dist/PubConv-1.0.0-windows.zip         the app, portable (GitHub release)
   dist/PubConv-1.0.0.msix                Microsoft Store package (Microsoft signs it)
 
@@ -10,8 +11,10 @@ Run:  python packaging/build_release.py
 import json
 import os
 import shutil
+import struct
 import subprocess
 import sys
+import zlib
 from pathlib import Path
 
 from PIL import Image
@@ -51,13 +54,39 @@ def run(cmd, **kw):
 
 def cargo_build() -> Path:
     env = dict(os.environ, CARGO_TARGET_DIR=str(TARGET))
-    # the app's Windows libraries need MinGW's dlltool and as on PATH (GitHub's Windows machines have them)
     run([CARGO, "build", "--release", "-p", "pubconv", "-p", "pubconv-app"], cwd=ROOT, env=env)
     out = STAGE / "bin-full"
     out.mkdir(parents=True, exist_ok=True)
     for exe in ("pubconv.exe", "pubconv-cli.exe"):
         shutil.copy2(TARGET / "release" / exe, out / exe)
+        assert_self_contained(out / exe)
     return out
+
+
+def imported_dlls(exe: Path) -> set[str]:
+    d = exe.read_bytes()
+    pe = struct.unpack_from("<I", d, 0x3c)[0]
+    count, opt_size = struct.unpack_from("<H", d, pe + 6)[0], struct.unpack_from("<H", d, pe + 20)[0]
+    sections = [struct.unpack_from("<8sIIII", d, pe + 24 + opt_size + 40 * i) for i in range(count)]
+
+    def offset(rva):
+        return next(s[4] + rva - s[2] for s in sections if s[2] <= rva < s[2] + max(s[1], s[3]))
+
+    names, at = set(), offset(struct.unpack_from("<I", d, pe + 24 + 120)[0])
+    while (name_rva := struct.unpack_from("<5I", d, at)[3]):
+        p = offset(name_rva)
+        names.add(d[p:d.index(b"\0", p)].decode().lower())
+        at += 20
+    return names
+
+
+def assert_self_contained(exe: Path):
+    """Fail the build if an exe needs a DLL that a clean Windows doesn't have."""
+    system = ("api-ms-win-", "advapi32", "bcrypt", "combase", "comctl32", "comdlg32", "crypt32", "dwmapi", "gdi32", "imm32",
+              "kernel", "ntdll", "ole32", "oleaut32", "propsys", "rpcrt4", "secur32", "shcore", "shell32", "shlwapi", "user32",
+              "userenv", "uxtheme", "version", "winmm", "ws2_32")
+    extra = sorted(n for n in imported_dlls(exe) if not n.startswith(system))
+    assert not extra, f"{exe.name} needs DLLs a clean Windows lacks: {extra}"
 
 
 def stage_engine(lo_dir: Path) -> Path:
@@ -145,6 +174,35 @@ def build_msix(app: Path, cfg: dict):
     print("  wrote", out, f"{out.stat().st_size / 1e6:.0f} MB")
 
 
+def write_payload(app: Path, uninstaller: Path, out: Path):
+    """The format read by crates/pubconv-setup: see entries() there."""
+    files = [(f.relative_to(app.parent / app.name).as_posix(), f) for f in sorted(app.rglob("*")) if f.is_file()]
+    files.append(("uninstall.exe", uninstaller))
+    with out.open("wb") as w:
+        for rel, f in files:
+            data, name = f.read_bytes(), rel.encode()
+            packed = zlib.compress(data, 6)
+            w.write(struct.pack("<I", len(name)) + name + struct.pack("<QQ", len(data), len(packed)) + packed)
+
+
+def build_setup(app: Path, ver: str):
+    env = dict(os.environ, CARGO_TARGET_DIR=str(TARGET))
+    env.pop("PUBCONV_PAYLOAD", None)
+    # built without a payload, the installer program is the uninstaller
+    run([CARGO, "build", "--release", "-p", "pubconv-setup"], cwd=ROOT, env=env)
+    uninstaller = STAGE / "uninstall.exe"
+    shutil.copy2(TARGET / "release" / "pubconv-setup.exe", uninstaller)
+    assert_self_contained(uninstaller)
+    payload = STAGE / "payload.bin"
+    write_payload(app, uninstaller, payload)
+    run([CARGO, "build", "--release", "-p", "pubconv-setup"], cwd=ROOT, env=dict(env, PUBCONV_PAYLOAD=str(payload)))
+    DIST.mkdir(exist_ok=True)
+    out = DIST / f"PubConv-Setup-{ver}.exe"
+    shutil.copy2(TARGET / "release" / "pubconv-setup.exe", out)
+    assert_self_contained(out)
+    print("  wrote", out, f"{out.stat().st_size / 1e6:.0f} MB")
+
+
 def main():
     cfg = json.loads((PKG / "release.json").read_text(encoding="utf-8"))
     ver = cfg["version"].rsplit(".", 1)[0]
@@ -153,6 +211,7 @@ def main():
     if "--no-zip" not in sys.argv:
         zip_dir(full, f"PubConv-{ver}-windows")
     build_msix(full, cfg)
+    build_setup(full, ver)
 
 
 if __name__ == "__main__":

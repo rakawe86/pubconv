@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PubConv</title>
+<style>
+:root {
+  --bg: #f4f6fb; --panel: #ffffff; --text: #141821; --muted: #5d6679; --line: #e3e7ef; --line-strong: #cfd5e1;
+  --brand: #2457d6; --brand-hover: #1c49bb; --brand-soft: #e9efff; --ok: #12804a; --ok-soft: #e6f5ec; --bad: #c4321f; --bad-soft: #fdecea;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1218; --panel: #171b23; --text: #e8ebf2; --muted: #a2aabb; --line: #262c38; --line-strong: #343b4a;
+    --brand: #5b8cff; --brand-hover: #79a1ff; --brand-soft: #1b2643; --ok: #4cc786; --ok-soft: #14291f; --bad: #ff7a68; --bad-soft: #321a17;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body {
+  font: 15px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  color: var(--text); overflow: hidden; user-select: none; -webkit-user-select: none;
+  background: radial-gradient(90% 70% at 50% -10%, var(--brand-soft), transparent 70%), var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 44px; text-align: center;
+}
+section { width: 100%; display: flex; flex-direction: column; align-items: center; animation: rise .28s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+.logo { width: 84px; height: 84px; display: block; margin-bottom: 18px; filter: drop-shadow(0 8px 18px rgba(36,87,214,.3)); }
+.badge { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 18px; }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+h1 { font: 600 28px/1.2 "Segoe UI Variable Display", "Segoe UI", sans-serif; letter-spacing: -.02em; margin: 0 0 8px; }
+p { margin: 0; color: var(--muted); max-width: 470px; }
+.where { font-size: 12.5px; margin-top: 14px; overflow-wrap: anywhere; }
+label { display: inline-flex; align-items: center; gap: 9px; margin-top: 18px; cursor: pointer; }
+input[type=checkbox] { width: 17px; height: 17px; margin: 0; accent-color: var(--brand); }
+.actions { display: flex; gap: 10px; margin-top: 24px; }
+button {
+  font: 600 15px "Segoe UI Variable Text", "Segoe UI", sans-serif; height: 46px; min-width: 150px; padding: 0 24px; border-radius: 11px; cursor: pointer;
+  color: var(--text); background: var(--panel); border: 1px solid var(--line-strong); transition: background .12s, transform .06s;
+}
+button:hover { border-color: var(--muted); }
+button:active { transform: translateY(1px); }
+button.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+button.primary:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
+@media (prefers-color-scheme: dark) { button.primary { color: #0f1218; } }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.track { width: 100%; max-width: 420px; height: 10px; border-radius: 99px; background: var(--line); margin-top: 22px; overflow: hidden; }
+.fill { height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, #3d6ff0, #6d93ff); transition: width .2s ease-out; }
+.percent { margin-top: 10px; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<section id="start" hidden>
+  <img class="logo" src="/logo.png" alt="">
+  <h1 id="startTitle"></h1>
+  <p id="startText"></p>
+  <p class="where" id="where"></p>
+  <label id="desktopRow"><input type="checkbox" id="desktop" checked>Add a shortcut to the desktop</label>
+  <div class="actions"><button id="closeBtn">Cancel</button><button class="primary" id="runBtn"></button></div>
+</section>
+
+<section id="working" hidden>
+  <img class="logo" src="/logo.png" alt="">
+  <h1 id="workTitle"></h1>
+  <p id="workText"></p>
+  <div class="track" id="track" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="fill"></div></div>
+  <p class="percent" id="percent"></p>
+</section>
+
+<section id="done" hidden>
+  <div class="badge ok"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+  <h1 id="doneTitle"></h1>
+  <p id="doneText"></p>
+  <div class="actions"><button id="doneClose">Close</button><button class="primary" id="openBtn">Open PubConv</button></div>
+</section>
+
+<section id="failed" hidden>
+  <div class="badge bad"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 7v6"/><path d="M12 17h.01"/></svg></div>
+  <h1>That didn't work</h1>
+  <p id="errorText" role="alert"></p>
+  <div class="actions"><button id="failClose">Close</button><button class="primary" id="retryBtn">Try again</button></div>
+</section>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const send = (cmd, extra) => (window.ipc || Mock).postMessage(JSON.stringify(Object.assign({ cmd }, extra)));
+let mode = "install";
+
+function show(id) {
+  for (const s of document.querySelectorAll("section")) s.hidden = s.id !== id;
+  const first = document.querySelector("#" + id + " button.primary");
+  if (first) first.focus();
+}
+function run() {
+  $("workTitle").textContent = mode === "install" ? "Installing PubConv" : "Removing PubConv";
+  $("workText").textContent = mode === "install" ? "This takes about a minute. You can keep working." : "Just a moment.";
+  $("track").hidden = $("percent").hidden = mode !== "install";
+  setPercent(0);
+  show("working");
+  send("run", { desktop: $("desktop").checked });
+}
+function setPercent(n) {
+  $("fill").style.width = n + "%";
+  $("percent").textContent = n + "%";
+  $("track").setAttribute("aria-valuenow", n);
+}
+
+window.setup = {
+  on(e) {
+    if (e.type === "init") {
+      mode = e.mode;
+      const install = mode === "install";
+      $("startTitle").textContent = install ? "Install PubConv" : "Uninstall PubConv";
+      $("startText").textContent = install
+        ? "Convert Publisher files to PDF, offline and private. Free, no account needed."
+        : "This removes PubConv from this PC. Your .pub files and PDFs stay where they are.";
+      $("where").textContent = install ? "Version " + e.version + " · installs to " + e.dir : "";
+      $("desktopRow").hidden = !install;
+      $("runBtn").textContent = install ? "Install" : "Uninstall";
+      $("doneTitle").textContent = install ? "PubConv is ready" : "PubConv was removed";
+      $("doneText").textContent = install ? "Find it any time in the Start menu." : "Thanks for trying it.";
+      $("openBtn").hidden = !install;
+      show("start");
+    } else if (e.type === "progress") {
+      setPercent(e.percent);
+    } else if (e.type === "done") {
+      show("done");
+      if (mode !== "install") $("doneClose").focus();
+    } else if (e.type === "error") {
+      $("errorText").textContent = e.message;
+      show("failed");
+    }
+  },
+};
+$("runBtn").onclick = $("retryBtn").onclick = run;
+$("openBtn").onclick = () => send("open");
+$("closeBtn").onclick = $("doneClose").onclick = $("failClose").onclick = () => send("close");
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+// demo backend when opened in a normal browser (design preview): #uninstall, #error
+const Mock = {
+  postMessage(body) {
+    const m = JSON.parse(body), emit = (e, ms) => setTimeout(() => window.setup.on(e), ms);
+    if (m.cmd === "ready") emit({ type: "init", mode: location.hash === "#uninstall" ? "uninstall" : "install", version: "1.0.0", dir: "C:\\Users\\you\\AppData\\Local\\Programs\\PubConv" }, 0);
+    if (m.cmd === "run" && location.hash === "#error") emit({ type: "error", message: "PubConv seems to be open. Close it and try again." }, 500);
+    else if (m.cmd === "run") { for (let i = 1; i <= 20; i++) emit({ type: "progress", percent: i * 5 }, i * 120); emit({ type: "done" }, 2700); }
+  },
+};
+send("ready");
+</script>
+</body>
+</html>

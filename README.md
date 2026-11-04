@@ -9,7 +9,8 @@ Converts Microsoft Publisher (`.pub`) files to PDF, offline, and gets right what
 
 ## Download
 - **Microsoft Store** (coming soon: signed by Microsoft, installs without warnings, updates itself).
-- **Portable zip:** from [Releases](https://github.com/rakawe86/pubconv/releases). Unzip and run `pubconv.exe`. Until code signing is in place, Windows may show "Windows protected your PC": click **More info → Run anyway**.
+- **Installer:** `PubConv-Setup` from [Releases](https://github.com/rakawe86/pubconv/releases). Needs no admin rights; remove it any time from Windows Settings → Apps. Until code signing is in place, Windows may show "Windows protected your PC": click **More info → Run anyway**.
+- **Portable zip:** also from Releases, for USB sticks and locked-down PCs. Unzip and run `pubconv.exe`.
 
 ## Support PubConv
 PubConv is free. If it saved you time, you can say thanks with a donation: **[Donate with PayPal](https://www.paypal.com/ncp/payment/X45F9F8S58KL8)**. Donations are voluntary and unlock nothing; every feature is free for everyone.
@@ -36,13 +37,14 @@ Robustness:
 | `crates/pubcore` | .pub reader, Publisher-style text flow, WordArt renderer, PDF overlay |
 | `crates/pubconv` | conversion engine (`lib.rs`) and command line (`bin/pubconv-cli.rs`) |
 | `crates/pubconv-app` | Windows app: window and WebView2 host (`src/main.rs`), interface (`ui/index.html`, open it in a browser for a design preview: `#list`, `#running`, `#done`) |
-| `packaging/` | release script: app folders, portable zips, Microsoft Store (MSIX) package |
+| `crates/pubconv-setup` | installer and uninstaller, styled like the app (`ui/index.html`, open it in a browser for a preview) |
+| `packaging/` | release script: app folders, installer, portable zip, Microsoft Store (MSIX) package |
 | `testdata/` | 81 test .pub files, Publisher's own PDFs (`reference/`), expected results (`fixtures/`) |
 | `tools/` | stress test, comparison sheets, Publisher comparison scripts |
 | `store/` | Microsoft Store listing texts and screenshots |
 
 ## Build and test
-Needs Rust (GNU toolchain), Python 3 with `pillow pymupdf psutil`, and LibreOffice (on the build PC only). The Windows app (`pubconv-app`) also needs a GNU assembler (`as`, from MinGW-w64) for its Windows libraries; GitHub Actions installs it. Everything else builds without it.
+Needs Rust with the MSVC toolchain (and Visual Studio's C++ build tools), Python 3 with `pillow pymupdf psutil`, and LibreOffice (on the build PC only).
 ```bash
 cargo test --release
 ```

@@ -2,7 +2,7 @@
 #
 # Every push / pull request: Rust tests (incl. fuzzing), release build, app smoke test.
 # Run manually ("Run workflow") or push a tag like v1.0.0: also the end-to-end
-# stress test and the release packages (portable zip, Microsoft Store MSIX).
+# stress test and the release packages (installer, portable zip, Microsoft Store MSIX).
 # Tags additionally publish a GitHub Release with those files attached.
 name: build
 
@@ -31,19 +31,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Rust (GNU toolchain, as used locally)
+      - name: Rust (MSVC toolchain, which links the WebView2 loader into the exe)
         run: |
-          rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal
-          rustup default stable-x86_64-pc-windows-gnu
+          rustup toolchain install stable-x86_64-pc-windows-msvc --profile minimal
+          rustup default stable-x86_64-pc-windows-msvc
           rustc --version
-
-      - name: Import-library tools for the app's Windows libraries
-        run: |
-          if (Get-Command as -ErrorAction SilentlyContinue) { "assembler: " + (Get-Command as).Source }
-          else {
-            choco install mingw -y --no-progress
-            "C:/ProgramData/mingw64/mingw64/bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
-          }
 
       - uses: actions/cache@v4
         with:
@@ -51,8 +43,8 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
-          restore-keys: cargo-${{ runner.os }}-
+          key: cargo-msvc-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: cargo-msvc-${{ runner.os }}-
 
       - uses: actions/setup-python@v5
         with:
@@ -95,18 +87,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Rust (GNU toolchain)
+      - name: Rust (MSVC toolchain, which links the WebView2 loader into the exe)
         run: |
-          rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal
-          rustup default stable-x86_64-pc-windows-gnu
-
-      - name: Import-library tools for the app's Windows libraries
-        run: |
-          if (Get-Command as -ErrorAction SilentlyContinue) { "assembler: " + (Get-Command as).Source }
-          else {
-            choco install mingw -y --no-progress
-            "C:/ProgramData/mingw64/mingw64/bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
-          }
+          rustup toolchain install stable-x86_64-pc-windows-msvc --profile minimal
+          rustup default stable-x86_64-pc-windows-msvc
+          rustc --version
 
       - uses: actions/cache@v4
         with:
@@ -114,8 +99,8 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
-          restore-keys: cargo-${{ runner.os }}-
+          key: cargo-msvc-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: cargo-msvc-${{ runner.os }}-
 
       - uses: actions/setup-python@v5
         with:
@@ -129,11 +114,58 @@ jobs:
           choco install libreoffice-fresh -y --no-progress
           if (-not (Test-Path "C:\Program Files\LibreOffice\program\soffice.com")) { throw "LibreOffice not installed" }
 
-      - name: Release packages (zips + Microsoft Store MSIX)
+      - name: Release packages (installer, zip, Microsoft Store MSIX)
         run: python packaging/build_release.py
 
       - name: End-to-end stress test
         run: python tools/stress_test.py
+
+      # what a user does: install, open from the installed folder, uninstall
+      - name: Installer test (installs, opens the installed app, uninstalls)
+        run: |
+          New-Item -ItemType Directory -Force .build | Out-Null
+          function Shot($name) {
+            Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+            $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+            $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+            [System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+            $bmp.Save("$PWD/.build/$name.png")
+          }
+          $setup = (Get-ChildItem dist/PubConv-Setup-*.exe).FullName
+          $ui = Start-Process $setup -PassThru
+          Start-Sleep 15
+          Shot "installer-window"
+          if ($ui.HasExited) { throw "The installer window closed by itself" }
+          Stop-Process -Id $ui.Id
+
+          $p = Start-Process $setup -ArgumentList "--silent" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Install failed (exit code $($p.ExitCode))" }
+          $dir = "$env:LOCALAPPDATA\Programs\PubConv"
+          $lnk = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\PubConv.lnk"
+          foreach ($f in "$dir\pubconv.exe", "$dir\uninstall.exe", $lnk) { if (-not (Test-Path $f)) { throw "Missing after install: $f" } }
+
+          $app = Start-Process "$dir\pubconv.exe" -WorkingDirectory $env:TEMP -PassThru
+          Start-Sleep 15
+          $app.Refresh()
+          Shot "installed-app"
+          # a missing DLL leaves a live process with only an error box, so check the window itself
+          if ($app.HasExited -or $app.MainWindowTitle -ne "PubConv") { throw "The installed app didn't open its window" }
+          Stop-Process -Id $app.Id
+          Start-Sleep 3
+
+          $u = Start-Process "$dir\uninstall.exe" -ArgumentList "--silent" -Wait -PassThru
+          if ($u.ExitCode -ne 0) { throw "Uninstall failed (exit code $($u.ExitCode))" }
+          Start-Sleep 8
+          if ((Test-Path $dir) -or (Test-Path $lnk)) { throw "Uninstall left files behind" }
+
+      - name: Upload installer screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-screens
+          path: .build/*.png
+          retention-days: 7
+          if-no-files-found: ignore
 
       # Code signing (free for open source, by SignPath Foundation). Runs once the
       # SignPath project exists and its API token is saved as the SIGNPATH_API_TOKEN
@@ -150,7 +182,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pubconv-unsigned
-          path: dist/*.zip
+          path: |
+            dist/*.zip
+            dist/PubConv-Setup-*.exe
           if-no-files-found: error
 
       - name: Sign with SignPath
@@ -168,7 +202,7 @@ jobs:
 
       - name: Use the signed zip
         if: steps.signing.outputs.enabled == 'true'
-        run: Get-ChildItem dist/signed -Filter *.zip | Move-Item -Destination dist -Force
+        run: Get-ChildItem dist/signed -File | Move-Item -Destination dist -Force
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
@@ -176,6 +210,7 @@ jobs:
           name: pubconv-packages
           path: |
             dist/*.zip
+            dist/*.exe
             dist/*.msix
           retention-days: 7
           if-no-files-found: error
@@ -193,4 +228,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" dist/*.zip --title "PubConv ${{ github.ref_name }}" --generate-notes
+        run: gh release create "${{ github.ref_name }}" dist/*.exe dist/*.zip --title "PubConv ${{ github.ref_name }}" --generate-notes

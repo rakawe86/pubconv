@@ -26,6 +26,7 @@ use pubconv::{collect_pub_files, convert, Event, Options, Summary, APP_NAME, VER
 const HOME: &str = "https://github.com/rakawe86/pubconv";
 const UI: &str = include_str!("../ui/index.html");
 const ICON: &[u8] = include_bytes!("../assets/pubconv.ico");
+const LOGO: &[u8] = include_bytes!("../assets/pubconv.png");
 /// The page is served from this origin, so it gets normal storage (remembered settings).
 const ORIGIN: &str = "http://pubconv.localhost";
 
@@ -287,8 +288,9 @@ fn main() {
     let mut context = WebContext::new(data_dir());
     let (p_ipc, p_drop) = (proxy.clone(), proxy.clone());
     let webview = WebViewBuilder::new_with_web_context(&mut context)
-        .with_custom_protocol("pubconv".into(), |_, _| {
-            Response::builder().header(CONTENT_TYPE, "text/html; charset=utf-8").body(Cow::Borrowed(UI.as_bytes())).unwrap()
+        .with_custom_protocol("pubconv".into(), |_, req| {
+            let (kind, body): (&str, &[u8]) = if req.uri().path() == "/logo.png" { ("image/png", LOGO) } else { ("text/html; charset=utf-8", UI.as_bytes()) };
+            Response::builder().header(CONTENT_TYPE, kind).body(Cow::Borrowed(body)).unwrap()
         })
         .with_url(format!("{ORIGIN}/"))
         .with_navigation_handler(|url| url.starts_with(ORIGIN))
